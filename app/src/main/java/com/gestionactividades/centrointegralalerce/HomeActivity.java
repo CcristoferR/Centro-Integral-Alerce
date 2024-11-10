@@ -36,8 +36,8 @@ public class HomeActivity extends AppCompatActivity {
         // Inicializar datos de prueba
         activitiesList = getSampleActivities();
 
-        // Configura el RecyclerView
-        activitiesAdapter = new ActivitiesAdapter(new ArrayList<>());
+        // Configura el RecyclerView con datos de ejemplo
+        activitiesAdapter = new ActivitiesAdapter(this, new ArrayList<>());
         activitiesRecyclerView.setAdapter(activitiesAdapter);
         activitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -72,9 +72,9 @@ public class HomeActivity extends AppCompatActivity {
     // Método para agregar datos de prueba
     private List<EventActivity> getSampleActivities() {
         List<EventActivity> sampleActivities = new ArrayList<>();
-        sampleActivities.add(new EventActivity("Reunión", "2024-11-10", "Sala A"));
-        sampleActivities.add(new EventActivity("Taller de Capacitación", "2024-11-12", "Sala B"));
-        sampleActivities.add(new EventActivity("Charla Informativa", "2024-11-15", "Auditorio"));
+        sampleActivities.add(new EventActivity("Reunión", "2024-11-10", "Oficina central", "Reunión de planificación", "Departamento de Administración", "Importante"));
+        sampleActivities.add(new EventActivity("Capacitación", "2024-11-10", "Sala A", "Capacitación de herramientas", "Departamento de Capacitación", "Opcional"));
+
         return sampleActivities;
     }
 

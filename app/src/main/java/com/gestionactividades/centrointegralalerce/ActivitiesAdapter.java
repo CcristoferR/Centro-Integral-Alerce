@@ -1,6 +1,8 @@
 // ActivitiesAdapter.java
 package com.gestionactividades.centrointegralalerce;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +16,10 @@ import java.util.List;
 public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.ActivityViewHolder> {
 
     private List<EventActivity> activities;
+    private Context context;
 
-    public ActivitiesAdapter(List<EventActivity> activities) {
+    public ActivitiesAdapter(Context context, List<EventActivity> activities) {
+        this.context = context;
         this.activities = activities;
     }
 
@@ -29,9 +33,19 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
         EventActivity activity = activities.get(position);
-        holder.activityNameTextView.setText(activity.getName());
+        holder.activityNameTextView.setText(activity.getTitle());
         holder.activityDateTextView.setText(activity.getDate());
-        holder.activityLocationTextView.setText(activity.getLocation());
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ActivityDetailActivity.class);
+            intent.putExtra("title", activity.getTitle());
+            intent.putExtra("date", activity.getDate());
+            intent.putExtra("location", activity.getLocation());
+            intent.putExtra("description", activity.getDescription());
+            intent.putExtra("provider", activity.getProvider());
+            intent.putExtra("type", activity.getType());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -39,6 +53,7 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
         return activities.size();
     }
 
+    // Método para actualizar la lista de actividades
     public void updateActivities(List<EventActivity> newActivities) {
         this.activities = newActivities;
         notifyDataSetChanged();
@@ -47,13 +62,11 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
     public static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView activityNameTextView;
         TextView activityDateTextView;
-        TextView activityLocationTextView;
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);
             activityNameTextView = itemView.findViewById(R.id.activityNameTextView);
             activityDateTextView = itemView.findViewById(R.id.activityDateTextView);
-            activityLocationTextView = itemView.findViewById(R.id.activityLocationTextView);
         }
     }
 }

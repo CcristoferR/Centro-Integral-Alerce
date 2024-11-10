@@ -13,9 +13,11 @@
         android:theme="@style/Theme.CentroIntegralAlerce"
         tools:targetApi="31">
         <activity
-            android:name=".CreateActivity"
+            android:name=".ActivityDetailActivity"
             android:exported="false" />
-        <!-- Actividad Home -->
+        <activity
+            android:name=".CreateActivity"
+            android:exported="false" /> <!-- Actividad Home -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" /> <!-- Actividad Login (MainActivity) -->
