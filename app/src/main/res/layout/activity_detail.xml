@@ -1,127 +1,128 @@
-<!-- activity_detail.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/activityCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/dividerColor">
 
-        <!-- Nombre de la actividad -->
-        <TextView
-            android:id="@+id/activityNameLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre de la Actividad:"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/activityNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre de la Actividad" />
+            <!-- Título de la Actividad -->
+            <TextView
+                android:id="@+id/activityNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre de la Actividad"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/colorOnSurface" />
 
-        <!-- Fecha -->
-        <TextView
-            android:id="@+id/activityDateLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+            <!-- Fecha y Lugar -->
+            <TextView
+                android:id="@+id/activityDateLocationTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha • Lugar"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="@color/textColorSecondary"
+                android:paddingTop="4dp" />
 
-        <TextView
-            android:id="@+id/activityDateTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha de la Actividad" />
+            <!-- Proveedor -->
+            <TextView
+                android:id="@+id/activityProviderLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Proveedor:"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textColor="@color/textColorPrimary" />
 
-        <!-- Lugar -->
-        <TextView
-            android:id="@+id/activityLocationLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lugar:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+            <TextView
+                android:id="@+id/activityProviderTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre del Proveedor"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="@color/colorOnSurface" />
 
-        <TextView
-            android:id="@+id/activityLocationTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lugar de la Actividad" />
+            <!-- Beneficiarios -->
+            <TextView
+                android:id="@+id/activityBeneficiariesLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Beneficiarios:"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textColor="@color/textColorPrimary"
+                android:paddingTop="8dp" />
 
-        <!-- Proveedor -->
-        <TextView
-            android:id="@+id/activityProviderLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Proveedor:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+            <TextView
+                android:id="@+id/activityBeneficiariesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lista de beneficiarios"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="@color/colorOnSurface" />
 
-        <TextView
-            android:id="@+id/activityProviderTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Proveedor" />
+            <!-- Cupo -->
+            <TextView
+                android:id="@+id/activityCupoLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cupo:"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textColor="@color/textColorPrimary"
+                android:paddingTop="8dp" />
 
-        <!-- Beneficiarios -->
-        <TextView
-            android:id="@+id/activityBeneficiariesLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Beneficiarios:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+            <TextView
+                android:id="@+id/activityCupoTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cantidad de cupos"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="@color/colorOnSurface" />
 
-        <TextView
-            android:id="@+id/activityBeneficiariesTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Beneficiarios" />
+            <!-- Capacitación -->
+            <TextView
+                android:id="@+id/activityCapacitacionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capacitación:"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textColor="@color/textColorPrimary"
+                android:paddingTop="8dp" />
 
-        <!-- Cupo -->
-        <TextView
-            android:id="@+id/activityCupoLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cupo:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+            <TextView
+                android:id="@+id/activityCapacitacionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Información de capacitación"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textColor="@color/colorOnSurface" />
 
-        <TextView
-            android:id="@+id/activityCupoTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cupo" />
+            <!-- Botón para Abrir Archivo Adjunto -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/activityFileButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Abrir archivo adjunto"
+                android:layout_marginTop="16dp"
+                app:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="8dp"
+                app:rippleColor="@color/colorSecondary"
+                android:textColor="@color/colorOnPrimary" />
 
-        <!-- Capacitación -->
-        <TextView
-            android:id="@+id/activityCapacitacionLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Capacitación:"
-            android:textStyle="bold"
-            android:paddingTop="8dp" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/activityCapacitacionTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Capacitación" />
+    </com.google.android.material.card.MaterialCardView>
 
-        <!-- Archivo adjunto -->
-        <TextView
-            android:id="@+id/activityFileLinkTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Abrir archivo adjunto"
-            android:textColor="@android:color/holo_blue_dark"
-            android:visibility="gone"
-            android:clickable="true"
-            android:paddingTop="16dp" />
-    </LinearLayout>
 </ScrollView>
