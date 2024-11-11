@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -91,7 +92,11 @@ public class CreateActivity extends AppCompatActivity {
                 .setPositiveButton("Aceptar", (dialog, which) -> {
                     String selectedDate = dateButton.getText().toString();
                     String selectedTime = timeButton.getText().toString();
-                    selectedDatesTextView.setText("Fecha: " + selectedDate + "\nHora: " + selectedTime);
+                    if (!selectedDate.isEmpty() && !selectedTime.isEmpty()) {
+                        selectedDatesTextView.setText("Fecha: " + selectedDate + " Hora: " + selectedTime);
+                    } else {
+                        Toast.makeText(this, "Por favor selecciona una fecha y hora", Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .setNegativeButton("Cancelar", null)
                 .create()
@@ -116,12 +121,12 @@ public class CreateActivity extends AppCompatActivity {
     private void saveActivityWithFile() {
         String activityName = activityNameEditText.getText().toString();
         String fecha = selectedDatesTextView.getText().toString();
-        String lugar = locationSpinner.getSelectedItem().toString();
+        String lugar = locationSpinner.getSelectedItem() != null ? locationSpinner.getSelectedItem().toString() : "Sin lugar";
         String oferentes = providerEditText.getText().toString();
         String beneficiarios = beneficiariesEditText.getText().toString();
 
-        if (activityName.isEmpty() || fileUri == null) {
-            Toast.makeText(this, "Por favor ingresa un nombre de actividad y selecciona un archivo", Toast.LENGTH_SHORT).show();
+        if (activityName.isEmpty() || fileUri == null || fecha.isEmpty()) {
+            Toast.makeText(this, "Por favor ingresa un nombre de actividad, selecciona una fecha y archivo", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -140,9 +145,9 @@ public class CreateActivity extends AppCompatActivity {
                     activityData.put("name", activityName);
                     activityData.put("fileUrl", fileUrl);
                     activityData.put("fecha", fecha);
-                    activityData.put("lugar", lugar);
-                    activityData.put("oferentes", oferentes);
-                    activityData.put("beneficiarios", beneficiarios);
+                    activityData.put("lugar", lugar.isEmpty() ? "Sin lugar" : lugar);
+                    activityData.put("oferentes", oferentes.isEmpty() ? "Sin proveedor" : oferentes);
+                    activityData.put("beneficiarios", beneficiarios.isEmpty() ? "Sin beneficiarios" : beneficiarios);
 
                     if (activityId != null) {
                         databaseReference.child(activityId).setValue(activityData)

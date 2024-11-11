@@ -1,46 +1,36 @@
-// EventActivity.java
 package com.gestionactividades.centrointegralalerce;
 
 public class EventActivity {
-
-    private String title;
-    private String date;
-    private String location;
+    private String name;
+    private String fecha;
+    private String lugar;  // Cambiado de `location` a `lugar`
     private String description;
-    private String provider;
-    private String type; // Campo agregado
+    private String oferentes;  // Cambiado de `provider` a `oferentes`
+    private String type;
+    private String fileUrl;
+    private String beneficiarios;
 
-    public EventActivity(String title, String date, String location, String description, String provider, String type) {
-        this.title = title;
-        this.date = date;
-        this.location = location;
+    // Constructor vacío necesario para Firebase
+    public EventActivity() {}
+
+    public EventActivity(String name, String fecha, String lugar, String description, String oferentes, String type, String fileUrl, String beneficiarios) {
+        this.name = name;
+        this.fecha = fecha;
+        this.lugar = lugar;
         this.description = description;
-        this.provider = provider;
-        this.type = type; // Asignación del campo type
+        this.oferentes = oferentes;
+        this.type = type;
+        this.fileUrl = fileUrl;
+        this.beneficiarios = beneficiarios;
     }
 
     // Getters
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public String getType() { // Getter para type
-        return type;
-    }
+    public String getName() { return name; }
+    public String getFecha() { return fecha; }
+    public String getLugar() { return lugar; }  // Método actualizado
+    public String getDescription() { return description; }
+    public String getOferentes() { return oferentes; }  // Método actualizado
+    public String getType() { return type; }
+    public String getFileUrl() { return fileUrl; }
+    public String getBeneficiarios() { return beneficiarios; }
 }
