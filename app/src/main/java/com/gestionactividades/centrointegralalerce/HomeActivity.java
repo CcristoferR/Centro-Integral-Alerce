@@ -49,9 +49,15 @@ public class HomeActivity extends AppCompatActivity {
 
         // Botón para crear una nueva actividad
         createActivityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
-            startActivity(intent);
+            try {
+                Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al abrir CreateActivity", Toast.LENGTH_SHORT).show();
+            }
         });
+
 
         // Marcar fechas con eventos en el calendario
         markEventsOnCalendar();

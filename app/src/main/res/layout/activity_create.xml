@@ -1,10 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<!-- activity_create.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateActivity">
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Nombre de la Actividad -->
+        <EditText
+            android:id="@+id/activityNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre de la actividad"
+            android:inputType="text" />
+
+        <!-- Tipo de Actividad -->
+        <Spinner
+            android:id="@+id/activityTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/activity_types"
+            android:prompt="@string/activity_type_prompt" />
+
+        <!-- Botón para abrir el diálogo de configuración de Fecha, Hora y Periodicidad -->
+        <Button
+            android:id="@+id/selectDateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configurar Fecha, Hora y Periodicidad" />
+
+        <!-- TextView para mostrar las fechas seleccionadas -->
+        <TextView
+            android:id="@+id/selectedDatesTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="Fechas seleccionadas aparecerán aquí"
+            android:textSize="16sp" />
+
+        <!-- Lugar -->
+        <Spinner
+            android:id="@+id/locationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/locations"
+            android:prompt="@string/location_prompt" />
+
+        <!-- Cupo -->
+        <EditText
+            android:id="@+id/capacityEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cupo"
+            android:inputType="number" />
+
+        <!-- Oferentes de la Actividad -->
+        <EditText
+            android:id="@+id/providerEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Oferentes de la Actividad" />
+
+        <!-- Beneficiarios -->
+        <EditText
+            android:id="@+id/beneficiariesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Beneficiarios" />
+
+        <!-- Adjuntar Archivos -->
+        <Button
+            android:id="@+id/uploadFileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adjuntar Archivos" />
+
+        <!-- Guardar Actividad -->
+        <Button
+            android:id="@+id/saveActivityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Actividad" />
+    </LinearLayout>
+</ScrollView>

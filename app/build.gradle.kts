@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services") // Agrega aquí el plugin de Google Services
 }
 
 android {
@@ -48,4 +49,9 @@ dependencies {
 
     // Material CalendarView
     implementation("com.prolificinteractive:material-calendarview:1.4.3")
+
+    implementation ("com.google.firebase:firebase-database:20.0.5") // Firebase Realtime Database
+    implementation ("com.google.firebase:firebase-storage:20.0.0") // Firebase Storage (para archivos)
+    implementation ("com.google.firebase:firebase-auth:21.0.1") // Firebase Auth (para autenticación)
+
 }

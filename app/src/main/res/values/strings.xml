@@ -1,3 +1,33 @@
+<!-- res/values/strings.xml -->
 <resources>
     <string name="app_name">Centro Integral Alerce</string>
+
+    <!-- Prompts para los Spinners -->
+    <string name="activity_type_prompt">Selecciona tipo de actividad</string>
+    <string name="periodicity_prompt">Selecciona periodicidad</string>
+    <string name="location_prompt">Selecciona lugar</string>
+
+    <!-- Arrays para los Spinners -->
+    <string-array name="activity_types">
+        <item>Capacitación</item>
+        <item>Taller</item>
+        <item>Charlas</item>
+        <item>Atenciones</item>
+        <item>Operativo en oficina</item>
+        <item>Operativo rural</item>
+        <item>Práctica profesional</item>
+        <item>Diagnóstico</item>
+    </string-array>
+
+    <string-array name="locations">
+        <item>Oficina del centro</item>
+        <item>Lugares del territorio</item>
+    </string-array>
+
+    <string-array name="frequency_options">
+        <item>Una vez</item>
+        <item>Semanalmente</item>
+        <item>Mensualmente</item>
+        <item>Personalizado</item>
+    </string-array>
 </resources>
