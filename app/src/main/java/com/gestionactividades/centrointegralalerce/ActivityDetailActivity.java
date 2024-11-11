@@ -17,13 +17,12 @@ public class ActivityDetailActivity extends AppCompatActivity {
         // Recibir los datos de la actividad seleccionada
         String name = getIntent().getStringExtra("name");
         String fecha = getIntent().getStringExtra("fecha");
-        String lugar = getIntent().getStringExtra("lugar");  // Cambiado a "lugar"
-        String oferentes = getIntent().getStringExtra("oferentes");  // Cambiado a "oferentes"
+        String lugar = getIntent().getStringExtra("lugar");
+        String oferentes = getIntent().getStringExtra("oferentes");
         String beneficiarios = getIntent().getStringExtra("beneficiarios");
-        String description = getIntent().getStringExtra("description");
-        String type = getIntent().getStringExtra("type");
-
         String fileUrl = getIntent().getStringExtra("fileUrl");
+        String cupo = getIntent().getStringExtra("cupo");
+        String capacitacion = getIntent().getStringExtra("capacitacion");
 
         // Configurar los TextViews con los datos recibidos
         TextView nameTextView = findViewById(R.id.activityNameTextView);
@@ -31,13 +30,17 @@ public class ActivityDetailActivity extends AppCompatActivity {
         TextView locationTextView = findViewById(R.id.activityLocationTextView);
         TextView providerTextView = findViewById(R.id.activityProviderTextView);
         TextView beneficiariesTextView = findViewById(R.id.activityBeneficiariesTextView);
+        TextView cupoTextView = findViewById(R.id.activityCupoTextView);
+        TextView capacitacionTextView = findViewById(R.id.activityCapacitacionTextView);
         TextView fileLinkTextView = findViewById(R.id.activityFileLinkTextView);
 
         nameTextView.setText(name != null ? name : "Sin nombre");
         dateTextView.setText(fecha != null ? fecha : "Sin fecha");
         locationTextView.setText(lugar != null ? lugar : "Sin lugar");
-        providerTextView.setText(oferentes != null ? oferentes : "Sin oferentes");
+        providerTextView.setText(oferentes != null ? oferentes : "Sin proveedor");
         beneficiariesTextView.setText(beneficiarios != null ? beneficiarios : "Sin beneficiarios");
+        cupoTextView.setText(cupo != null ? cupo : "Sin cupo");
+        capacitacionTextView.setText(capacitacion != null ? capacitacion : "Sin capacitación");
 
         // Configurar el enlace del archivo si está disponible
         if (fileUrl != null && !fileUrl.isEmpty()) {
@@ -50,5 +53,4 @@ public class ActivityDetailActivity extends AppCompatActivity {
             fileLinkTextView.setVisibility(View.GONE);
         }
     }
-
 }

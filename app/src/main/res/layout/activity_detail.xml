@@ -1,73 +1,127 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- activity_detail.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/activityNameTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre de la Actividad"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/activityDateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fecha de la Actividad"
-        android:textSize="16sp" />
+        <!-- Nombre de la actividad -->
+        <TextView
+            android:id="@+id/activityNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la Actividad:"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/activityLocationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lugar de la Actividad"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/activityNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la Actividad" />
 
-    <TextView
-        android:id="@+id/activityTypeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tipo de Actividad"
-        android:textSize="16sp" />
+        <!-- Fecha -->
+        <TextView
+            android:id="@+id/activityDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
 
-    <TextView
-        android:id="@+id/activityProviderTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Proveedor"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/activityDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha de la Actividad" />
 
-    <TextView
-        android:id="@+id/activityDescriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Descripción"
-        android:textSize="16sp" />
+        <!-- Lugar -->
+        <TextView
+            android:id="@+id/activityLocationLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
 
-    <TextView
-        android:id="@+id/activityBeneficiariesTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Beneficiarios"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/activityLocationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar de la Actividad" />
 
-    <TextView
-        android:id="@+id/activityPlaceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lugar"
-        android:textSize="16sp" />
+        <!-- Proveedor -->
+        <TextView
+            android:id="@+id/activityProviderLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Proveedor:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
 
-    <TextView
-        android:id="@+id/activityFileLinkTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Abrir archivo adjunto"
-        android:textSize="16sp"
-        android:textColor="@android:color/holo_blue_dark"
-        android:visibility="gone"
-        android:clickable="true" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/activityProviderTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Proveedor" />
+
+        <!-- Beneficiarios -->
+        <TextView
+            android:id="@+id/activityBeneficiariesLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beneficiarios:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/activityBeneficiariesTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beneficiarios" />
+
+        <!-- Cupo -->
+        <TextView
+            android:id="@+id/activityCupoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cupo:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/activityCupoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cupo" />
+
+        <!-- Capacitación -->
+        <TextView
+            android:id="@+id/activityCapacitacionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capacitación:"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/activityCapacitacionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capacitación" />
+
+        <!-- Archivo adjunto -->
+        <TextView
+            android:id="@+id/activityFileLinkTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Abrir archivo adjunto"
+            android:textColor="@android:color/holo_blue_dark"
+            android:visibility="gone"
+            android:clickable="true"
+            android:paddingTop="16dp" />
+    </LinearLayout>
+</ScrollView>

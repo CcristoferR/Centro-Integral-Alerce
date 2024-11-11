@@ -1,88 +1,86 @@
 <!-- activity_create.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Nombre de la Actividad -->
+        <!-- Nombre de la actividad -->
         <EditText
             android:id="@+id/activityNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre de la actividad"
+            android:hint="Nombre de la Actividad"
             android:inputType="text" />
 
-        <!-- Tipo de Actividad -->
-        <Spinner
-            android:id="@+id/activityTypeSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/activity_types"
-            android:prompt="@string/activity_type_prompt" />
-
-        <!-- Botón para abrir el diálogo de configuración de Fecha, Hora y Periodicidad -->
-        <Button
-            android:id="@+id/selectDateButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Configurar Fecha, Hora y Periodicidad" />
-
-        <!-- TextView para mostrar las fechas seleccionadas -->
-        <TextView
-            android:id="@+id/selectedDatesTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="Fechas seleccionadas aparecerán aquí"
-            android:textSize="16sp" />
-
-        <!-- Lugar -->
-        <Spinner
-            android:id="@+id/locationSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/locations"
-            android:prompt="@string/location_prompt" />
-
-        <!-- Cupo -->
-        <EditText
-            android:id="@+id/capacityEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Cupo"
-            android:inputType="number" />
-
-        <!-- Oferentes de la Actividad -->
+        <!-- Proveedor -->
         <EditText
             android:id="@+id/providerEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Oferentes de la Actividad" />
+            android:hint="Proveedor"
+            android:inputType="text" />
 
         <!-- Beneficiarios -->
         <EditText
             android:id="@+id/beneficiariesEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Beneficiarios" />
+            android:hint="Beneficiarios"
+            android:inputType="text" />
 
-        <!-- Adjuntar Archivos -->
+        <!-- Cupo -->
+        <EditText
+            android:id="@+id/cupoEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cupo de la Actividad"
+            android:inputType="number" />
+
+        <!-- Lugar -->
+        <Spinner
+            android:id="@+id/locationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Capacitación -->
+        <Spinner
+            android:id="@+id/capacitacionSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Fecha y hora seleccionadas -->
+        <TextView
+            android:id="@+id/selectedDatesTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fechas seleccionadas aparecerán aquí"
+            android:paddingTop="8dp" />
+
+        <!-- Botón para seleccionar fecha y hora -->
+        <Button
+            android:id="@+id/selectDateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar Fecha y Hora" />
+
+        <!-- Botón para subir archivo -->
         <Button
             android:id="@+id/uploadFileButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Adjuntar Archivos" />
+            android:text="Subir Archivo Adjunto" />
 
-        <!-- Guardar Actividad -->
+        <!-- Botón para guardar actividad -->
         <Button
             android:id="@+id/saveActivityButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Guardar Actividad" />
+
     </LinearLayout>
 </ScrollView>
