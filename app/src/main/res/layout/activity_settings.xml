@@ -11,6 +11,30 @@
         android:textSize="20sp"
         android:textStyle="bold"/>
 
-    <!-- Aquí agregarás los elementos de configuración -->
+    <!-- Botón Volver -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
 
+    <!-- Botón Cerrar Sesión -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cerrar Sesión"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Botón Registrar Usuario -->
+    <Button
+        android:id="@+id/registerUserButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registrar Usuario"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"/>
 </LinearLayout>

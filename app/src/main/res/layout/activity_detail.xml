@@ -103,7 +103,7 @@
                     android:id="@+id/activityCapacitacionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Capacitación:"
+                    android:text="Tipo de actividad:"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                     android:textColor="@color/textColorPrimary"
                     android:paddingTop="8dp" />

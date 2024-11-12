@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -38,14 +39,28 @@ public class CreateActivity extends AppCompatActivity {
     private Uri fileUri;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
+    private FirebaseAuth auth;
 
     private String[] locationOptions = {"Oficina del centro", "Lugares del territorio", "Otro lugar"};
-    private String[] capacitacionOptions = {"Capacitación A", "Capacitación B", "Capacitación C"};
+    private String[] capacitacionOptions = {
+            "Capacitación",
+            "Taller",
+            "Charlas",
+            "Atenciones",
+            "Operativo en oficina",
+            "Operativo rural",
+            "Operativo",
+            "Práctica profesional",
+            "Diagnóstico"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
+
+        // Inicializar FirebaseAuth y obtener el UID del usuario
+        auth = FirebaseAuth.getInstance();
 
         // Vincular variables con los elementos de la vista
         activityNameEditText = findViewById(R.id.activityNameEditText);
@@ -147,6 +162,12 @@ public class CreateActivity extends AppCompatActivity {
             return;
         }
 
+        // Obtener UID de usuario
+        String userId = auth.getCurrentUser().getUid();
+
+        // Crear referencia bajo el UID del usuario
+        DatabaseReference userActivitiesRef = databaseReference.child(userId);
+
         Toast.makeText(this, "Subiendo archivo a Firebase Storage...", Toast.LENGTH_SHORT).show();
 
         // Subir el archivo a Firebase Storage
@@ -157,7 +178,7 @@ public class CreateActivity extends AppCompatActivity {
                     Toast.makeText(this, "Archivo subido con éxito", Toast.LENGTH_SHORT).show();
 
                     // Guardar la información de la actividad en Firebase Realtime Database
-                    String activityId = databaseReference.push().getKey();
+                    String activityId = userActivitiesRef.push().getKey();
                     Map<String, Object> activityData = new HashMap<>();
                     activityData.put("name", activityName);
                     activityData.put("fileUrl", fileUrl);
@@ -169,11 +190,11 @@ public class CreateActivity extends AppCompatActivity {
                     activityData.put("capacitacion", capacitacion);
 
                     if (activityId != null) {
-                        databaseReference.child(activityId).setValue(activityData)
+                        userActivitiesRef.child(activityId).setValue(activityData)
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(this, "Actividad y archivo guardados correctamente en Firebase", Toast.LENGTH_LONG).show();
-                                        finish(); // Finaliza la actividad y regresa a la anterior
+                                        finish();
                                     } else {
                                         Toast.makeText(this, "Error al guardar la actividad en Firebase Database", Toast.LENGTH_LONG).show();
                                     }

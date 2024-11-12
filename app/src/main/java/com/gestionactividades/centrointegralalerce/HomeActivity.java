@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,11 +33,15 @@ public class HomeActivity extends AppCompatActivity {
     private ActivitiesAdapter activitiesAdapter;
     private List<EventActivity> activitiesList;
     private DatabaseReference databaseReference;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Inicializar FirebaseAuth
+        auth = FirebaseAuth.getInstance();
 
         // Inicializar vistas
         calendarView = findViewById(R.id.calendarView);
@@ -51,8 +56,9 @@ public class HomeActivity extends AppCompatActivity {
         activitiesRecyclerView.setAdapter(activitiesAdapter);
         activitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Referencia a Firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference("activities");
+        // Referencia a Firebase para cargar actividades del usuario autenticado
+        String userId = auth.getCurrentUser().getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference("activities").child(userId);
 
         // Configurar escucha para cambio de fecha en el calendario
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
@@ -101,7 +107,6 @@ public class HomeActivity extends AppCompatActivity {
 
                         String fullDate = activity.getFecha();
                         if (fullDate != null && fullDate.startsWith("Fecha:")) {
-                            // Extrae solo la parte de la fecha "dd/MM/yyyy" de "Fecha: dd/MM/yyyy Hora: hh:mm"
                             String[] dateTimeParts = fullDate.split(" ");
                             if (dateTimeParts.length >= 2) {
                                 String[] dateParts = dateTimeParts[1].split("/");
