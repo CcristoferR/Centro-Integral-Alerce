@@ -28,7 +28,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
     private RecyclerView activitiesRecyclerView;
-    private Button createActivityButton;
+    private Button createActivityButton, historyButton, settingsButton;
     private ActivitiesAdapter activitiesAdapter;
     private List<EventActivity> activitiesList;
     private DatabaseReference databaseReference;
@@ -42,6 +42,8 @@ public class HomeActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         activitiesRecyclerView = findViewById(R.id.activitiesRecyclerView);
         createActivityButton = findViewById(R.id.createActivityButton);
+        historyButton = findViewById(R.id.historyButton);
+        settingsButton = findViewById(R.id.settingsButton);
 
         // Inicializar lista y adaptador para RecyclerView
         activitiesList = new ArrayList<>();
@@ -56,11 +58,20 @@ public class HomeActivity extends AppCompatActivity {
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             List<EventActivity> activitiesForDate = getActivitiesForDate(date);
             activitiesAdapter.updateActivities(activitiesForDate);
-            activitiesAdapter.notifyDataSetChanged(); // Asegura que se actualice
+            activitiesAdapter.notifyDataSetChanged();
         });
 
+        // Configurar navegación
+        historyButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, HistoryActivity.class);
+            startActivity(intent);
+        });
 
-        // Configurar botón para crear una actividad
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
         createActivityButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
             startActivity(intent);
@@ -109,7 +120,6 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
 
-                // Aplica el decorador en el calendario para resaltar las fechas con actividades
                 calendarView.removeDecorators();
                 calendarView.addDecorator(new EventDecorator(0xFFE57373, dates));
                 Log.d("HomeActivity", "Fechas decoradas: " + dates);
@@ -131,7 +141,6 @@ public class HomeActivity extends AppCompatActivity {
         for (EventActivity activity : activitiesList) {
             String fullDate = activity.getFecha();
             if (fullDate != null && fullDate.startsWith("Fecha:")) {
-                // Extrae solo la parte de la fecha "dd/MM/yyyy" de "Fecha: dd/MM/yyyy Hora: hh:mm"
                 String activityDate = fullDate.split(" ")[1]; // Extrae solo la fecha
                 Log.d("HomeActivity", "Comparando fecha de actividad: " + activityDate);
                 if (activityDate.equals(selectedDate)) {
@@ -142,7 +151,4 @@ public class HomeActivity extends AppCompatActivity {
         Log.d("HomeActivity", "Actividades en la fecha seleccionada: " + activitiesOnDate.size());
         return activitiesOnDate;
     }
-
-
-
 }
