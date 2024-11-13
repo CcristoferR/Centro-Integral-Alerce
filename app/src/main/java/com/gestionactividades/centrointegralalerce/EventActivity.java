@@ -16,13 +16,18 @@ public class EventActivity {
     private String capacitacion;
     private List<RescheduleInfo> reschedules; // Lista de reprogramaciones
 
+    // Campos para cancelación
+    private boolean isCancelled; // Indica si la actividad está cancelada
+    private String cancellationReason; // Motivo de la cancelación
+    private String cancellationDate; // Fecha de la cancelación
+
     // Constructor vacío necesario para Firebase
     public EventActivity() {}
 
     // Constructor completo que incluye todos los campos
     public EventActivity(String activityId, String name, String fecha, String lugar, String description, String oferentes,
                          String type, String fileUrl, String beneficiarios, String cupo, String capacitacion,
-                         List<RescheduleInfo> reschedules) {
+                         List<RescheduleInfo> reschedules, boolean isCancelled, String cancellationReason, String cancellationDate) {
         this.activityId = activityId; // Asignar el activityId
         this.name = name;
         this.fecha = fecha;
@@ -35,6 +40,9 @@ public class EventActivity {
         this.cupo = cupo;
         this.capacitacion = capacitacion;
         this.reschedules = reschedules;
+        this.isCancelled = isCancelled;
+        this.cancellationReason = cancellationReason;
+        this.cancellationDate = cancellationDate;
     }
 
     // Getter y Setter para activityId
@@ -79,6 +87,16 @@ public class EventActivity {
 
     public List<RescheduleInfo> getReschedules() { return reschedules; }
     public void setReschedules(List<RescheduleInfo> reschedules) { this.reschedules = reschedules; }
+
+    // Getters y Setters para cancelación
+    public boolean isCancelled() { return isCancelled; }
+    public void setCancelled(boolean cancelled) { isCancelled = cancelled; }
+
+    public String getCancellationReason() { return cancellationReason; }
+    public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
+
+    public String getCancellationDate() { return cancellationDate; }
+    public void setCancellationDate(String cancellationDate) { this.cancellationDate = cancellationDate; }
 
     // Clase interna para la información de reprogramación
     public static class RescheduleInfo {

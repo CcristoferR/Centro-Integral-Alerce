@@ -25,8 +25,8 @@ public class ActivityDetailActivity extends AppCompatActivity {
     private TextView activityNameTextView, activityDateLocationTextView;
     private TextView providerTextView, beneficiariesTextView;
     private TextView cupoTextView, capacitacionTextView;
-    private TextView rescheduleHistoryTextView; // Nuevo TextView para el historial de reprogramaciones
-    private Button fileButton, backButton, editActivityButton, rescheduleActivityButton;
+    private TextView rescheduleHistoryTextView; // TextView para el historial o motivo de cancelación
+    private Button fileButton, backButton, editActivityButton, rescheduleActivityButton, cancelActivityButton;
 
     private DatabaseReference databaseReference;
     private String activityId;
@@ -44,11 +44,12 @@ public class ActivityDetailActivity extends AppCompatActivity {
         beneficiariesTextView = findViewById(R.id.activityBeneficiariesTextView);
         cupoTextView = findViewById(R.id.activityCupoTextView);
         capacitacionTextView = findViewById(R.id.activityCapacitacionTextView);
-        rescheduleHistoryTextView = findViewById(R.id.rescheduleHistoryTextView); // Nuevo TextView
+        rescheduleHistoryTextView = findViewById(R.id.rescheduleHistoryTextView); // TextView para mostrar motivo de cancelación o reprogramaciones
         fileButton = findViewById(R.id.activityFileButton);
         backButton = findViewById(R.id.backButton);
         editActivityButton = findViewById(R.id.editActivityButton);
-        rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton); // Nuevo botón "Reagendar"
+        rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton);
+        cancelActivityButton = findViewById(R.id.cancelActivityButton); // Nuevo botón "Cancelar Actividad"
 
         // Obtener el activityId desde el Intent
         activityId = getIntent().getStringExtra("activityId");
@@ -78,6 +79,13 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 startActivityForResult(intent, 2);
             });
 
+            // Configurar el botón "Cancelar Actividad" para navegar a CancelActivity
+            cancelActivityButton.setOnClickListener(v -> {
+                Intent intent = new Intent(ActivityDetailActivity.this, CancelActivity.class);
+                intent.putExtra("activityId", activityId);
+                startActivityForResult(intent, 3);
+            });
+
             // Cargar los detalles de la actividad
             loadActivityDetails();
         } else {
@@ -89,8 +97,8 @@ public class ActivityDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if ((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK) {
-            loadActivityDetails(); // Recargar detalles si hubo cambios o reprogramación
+        if ((requestCode == 1 || requestCode == 2 || requestCode == 3) && resultCode == RESULT_OK) {
+            loadActivityDetails(); // Recargar detalles si hubo cambios, reprogramación o cancelación
             setResult(RESULT_OK); // Indicar a HomeActivity que debe actualizarse
         }
     }
@@ -99,7 +107,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
         // Asegurarse de que la referencia incluye el userId y activityId correctos
         DatabaseReference activityRef = databaseReference;
 
-        activityRef.addValueEventListener(new ValueEventListener() { // Escuchar cambios en tiempo real
+        activityRef.addListenerForSingleValueEvent(new ValueEventListener() { // Escuchar una única vez
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 EventActivity activity = dataSnapshot.getValue(EventActivity.class);
@@ -116,19 +124,35 @@ public class ActivityDetailActivity extends AppCompatActivity {
                     cupoTextView.setText(activity.getCupo() != null ? activity.getCupo() : "Sin cupo");
                     capacitacionTextView.setText(activity.getCapacitacion() != null ? activity.getCapacitacion() : "Sin capacitación");
 
-                    // Mostrar el historial de reprogramaciones si existe
-                    if (activity.getReschedules() != null && !activity.getReschedules().isEmpty()) {
-                        StringBuilder history = new StringBuilder();
-                        for (EventActivity.RescheduleInfo reschedule : activity.getReschedules()) {
-                            history.append("Fecha: ").append(reschedule.getDateTime())
-                                    .append("\nMotivo: ").append(reschedule.getReason())
-                                    .append("\n\n");
-                        }
-                        rescheduleHistoryTextView.setText(history.toString());
+                    // Verificar si la actividad está cancelada
+                    if (activity.isCancelled()) {
+                        // Mostrar mensaje de cancelación
+                        Toast.makeText(ActivityDetailActivity.this, "Esta actividad ha sido cancelada.", Toast.LENGTH_LONG).show();
+
+                        // Deshabilitar botones que no aplican
+                        editActivityButton.setEnabled(false);
+                        rescheduleActivityButton.setEnabled(false);
+                        cancelActivityButton.setEnabled(false);
+
+                        // Mostrar motivo y fecha de cancelación
+                        String cancellationInfo = "Actividad cancelada el " + activity.getCancellationDate() +
+                                "\nMotivo: " + activity.getCancellationReason();
+                        rescheduleHistoryTextView.setText(cancellationInfo);
                         rescheduleHistoryTextView.setVisibility(View.VISIBLE);
                     } else {
-                        rescheduleHistoryTextView.setText("No hay reprogramaciones.");
-                        rescheduleHistoryTextView.setVisibility(View.GONE); // Ocultar si no hay reprogramaciones
+                        // Mostrar el historial de reprogramaciones si existe
+                        if (activity.getReschedules() != null && !activity.getReschedules().isEmpty()) {
+                            StringBuilder history = new StringBuilder();
+                            for (EventActivity.RescheduleInfo reschedule : activity.getReschedules()) {
+                                history.append("Fecha: ").append(reschedule.getDateTime())
+                                        .append("\nMotivo: ").append(reschedule.getReason())
+                                        .append("\n\n");
+                            }
+                            rescheduleHistoryTextView.setText(history.toString());
+                            rescheduleHistoryTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            rescheduleHistoryTextView.setVisibility(View.GONE); // Ocultar si no hay reprogramaciones
+                        }
                     }
 
                     // Configurar botón para abrir archivo si existe URL

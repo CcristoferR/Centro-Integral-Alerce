@@ -16,6 +16,9 @@
         android:theme="@style/Theme.CentroIntegralAlerce"
         tools:targetApi="31">
         <activity
+            android:name=".CancelActivity"
+            android:exported="false" />
+        <activity
             android:name=".RescheduleActivity"
             android:exported="false" />
         <activity
