@@ -1,6 +1,7 @@
 package com.gestionactividades.centrointegralalerce;
 
 public class EventActivity {
+    private String activityId; // Nuevo campo para el ID de la actividad
     private String name;
     private String fecha;
     private String lugar;
@@ -15,8 +16,10 @@ public class EventActivity {
     // Constructor vacío necesario para Firebase
     public EventActivity() {}
 
-    public EventActivity(String name, String fecha, String lugar, String description, String oferentes,
+    // Constructor completo que incluye el activityId
+    public EventActivity(String activityId, String name, String fecha, String lugar, String description, String oferentes,
                          String type, String fileUrl, String beneficiarios, String cupo, String capacitacion) {
+        this.activityId = activityId; // Asignar el activityId
         this.name = name;
         this.fecha = fecha;
         this.lugar = lugar;
@@ -29,7 +32,12 @@ public class EventActivity {
         this.capacitacion = capacitacion;
     }
 
-    // Getters
+    // Getter para activityId
+    public String getActivityId() {
+        return activityId;
+    }
+
+    // Otros getters
     public String getName() { return name; }
     public String getFecha() { return fecha; }
     public String getLugar() { return lugar; }
@@ -40,4 +48,9 @@ public class EventActivity {
     public String getBeneficiarios() { return beneficiarios; }
     public String getCupo() { return cupo; }
     public String getCapacitacion() { return capacitacion; }
+
+    // Setter para activityId en caso de ser necesario
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
+    }
 }

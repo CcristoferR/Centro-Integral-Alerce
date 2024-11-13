@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-// Importa lo necesario
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,10 +16,17 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
 
     private List<EventActivity> activities;
     private Context context;
+    private OnActivityClickListener listener; // Listener opcional para manejar clics
 
-    public ActivitiesAdapter(Context context, List<EventActivity> activities) {
+    // Constructor modificado que acepta un Listener adicional opcional
+    public ActivitiesAdapter(Context context, List<EventActivity> activities, OnActivityClickListener listener) {
         this.context = context;
         this.activities = activities;
+        this.listener = listener;
+    }
+
+    public ActivitiesAdapter(Context context, List<EventActivity> activities) {
+        this(context, activities, null); // Constructor sin Listener
     }
 
     @NonNull
@@ -37,17 +43,23 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
         holder.activityDateTextView.setText(activity.getFecha());
         holder.activityLocationTextView.setText(activity.getLugar());
 
+        // Configurar clic para abrir detalles o llamar al listener si está presente
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ActivityDetailActivity.class);
-            intent.putExtra("name", activity.getName());
-            intent.putExtra("fecha", activity.getFecha());
-            intent.putExtra("lugar", activity.getLugar());
-            intent.putExtra("oferentes", activity.getOferentes());
-            intent.putExtra("beneficiarios", activity.getBeneficiarios());
-            intent.putExtra("fileUrl", activity.getFileUrl());
-            intent.putExtra("cupo", activity.getCupo());
-            intent.putExtra("capacitacion", activity.getCapacitacion());
-            context.startActivity(intent);
+            if (listener != null) {
+                listener.onActivityClick(activity); // Llamar al listener si está configurado
+            } else {
+                Intent intent = new Intent(context, ActivityDetailActivity.class);
+                intent.putExtra("activityId", activity.getActivityId());
+                intent.putExtra("name", activity.getName());
+                intent.putExtra("fecha", activity.getFecha());
+                intent.putExtra("lugar", activity.getLugar());
+                intent.putExtra("oferentes", activity.getOferentes());
+                intent.putExtra("beneficiarios", activity.getBeneficiarios());
+                intent.putExtra("fileUrl", activity.getFileUrl());
+                intent.putExtra("cupo", activity.getCupo());
+                intent.putExtra("capacitacion", activity.getCapacitacion());
+                context.startActivity(intent);
+            }
         });
     }
 
@@ -57,7 +69,9 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
     }
 
     public void updateActivities(List<EventActivity> newActivities) {
-        this.activities = newActivities;
+        if (newActivities == null) return;
+        this.activities.clear();
+        this.activities.addAll(newActivities);
         notifyDataSetChanged();
     }
 
@@ -72,5 +86,10 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.Ac
             activityDateTextView = itemView.findViewById(R.id.activityDateTextView);
             activityLocationTextView = itemView.findViewById(R.id.activityLocationTextView);
         }
+    }
+
+    // Interfaz para manejar clics
+    public interface OnActivityClickListener {
+        void onActivityClick(EventActivity activity);
     }
 }

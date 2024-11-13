@@ -12,12 +12,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth; // Asegúrate de tener esta importación
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.database.FirebaseDatabase; // Asegúrate de tener esta importación
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage; // Asegúrate de tener esta importación
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Calendar;
@@ -70,46 +75,72 @@ public class EditActivity extends AppCompatActivity {
         ArrayAdapter<String> capacitacionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, capacitacionOptions);
         capacitacionSpinner.setAdapter(capacitacionAdapter);
 
+        // Obtener el UID del usuario actual
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         // Inicializar Firebase
-        databaseReference = FirebaseDatabase.getInstance().getReference("activities");
+        databaseReference = FirebaseDatabase.getInstance().getReference("activities").child(userId);
         storageReference = FirebaseStorage.getInstance().getReference("activity_files");
 
-        // Obtener datos del Intent
-        activityId = getIntent().getStringExtra("activityId"); // Asegúrate de enviar activityId desde ActivityDetailActivity
-        String name = getIntent().getStringExtra("name");
-        String fecha = getIntent().getStringExtra("fecha");
-        String lugar = getIntent().getStringExtra("lugar");
-        String oferentes = getIntent().getStringExtra("oferentes");
-        String beneficiarios = getIntent().getStringExtra("beneficiarios");
-        String cupo = getIntent().getStringExtra("cupo");
-        String capacitacion = getIntent().getStringExtra("capacitacion");
-        fileUrl = getIntent().getStringExtra("fileUrl");
+        // Obtener el activityId del Intent
+        activityId = getIntent().getStringExtra("activityId");
 
-        // Establecer los datos en los campos de edición
-        nameEditText.setText(name);
-        selectedDatesTextView.setText(fecha);
-        providerEditText.setText(oferentes);
-        beneficiariesEditText.setText(beneficiarios);
-        cupoEditText.setText(cupo);
+        // Cargar los detalles de la actividad desde Firebase
+        loadActivityDetails();
 
-        // Seleccionar las opciones en los Spinners
-        if (lugar != null) {
-            int locationPosition = locationAdapter.getPosition(lugar);
-            locationSpinner.setSelection(locationPosition);
-        }
-        if (capacitacion != null) {
-            int capacitacionPosition = capacitacionAdapter.getPosition(capacitacion);
-            capacitacionSpinner.setSelection(capacitacionPosition);
-        }
-
-        // Configurar el botón de seleccionar fecha y hora
+        // Configurar el botón para seleccionar fecha y hora
         selectDateButton.setOnClickListener(v -> showDateTimePicker());
 
-        // Configurar el botón de subir archivo
+        // Configurar el botón para subir archivo
         uploadFileButton.setOnClickListener(v -> openFilePicker());
 
-        // Configurar el botón de guardar cambios
+        // Configurar el botón para guardar cambios
         saveChangesButton.setOnClickListener(v -> saveChanges());
+    }
+
+    private void loadActivityDetails() {
+        // Obtenemos la referencia específica de la actividad
+        DatabaseReference activityRef = databaseReference.child(activityId);
+
+        activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                EventActivity activity = snapshot.getValue(EventActivity.class);
+                if (activity != null) {
+                    // Precargar datos en los campos de edición
+                    nameEditText.setText(activity.getName());
+                    selectedDatesTextView.setText(activity.getFecha());
+                    providerEditText.setText(activity.getOferentes());
+                    beneficiariesEditText.setText(activity.getBeneficiarios());
+                    cupoEditText.setText(activity.getCupo());
+
+                    // Seleccionar opciones en los Spinners
+                    ArrayAdapter<String> locationAdapter = (ArrayAdapter<String>) locationSpinner.getAdapter();
+                    int locationPosition = locationAdapter.getPosition(activity.getLugar());
+                    if (locationPosition >= 0) {
+                        locationSpinner.setSelection(locationPosition);
+                    }
+
+                    ArrayAdapter<String> capacitacionAdapter = (ArrayAdapter<String>) capacitacionSpinner.getAdapter();
+                    int capacitacionPosition = capacitacionAdapter.getPosition(activity.getCapacitacion());
+                    if (capacitacionPosition >= 0) {
+                        capacitacionSpinner.setSelection(capacitacionPosition);
+                    }
+
+                    // Guardar el fileUrl actual
+                    fileUrl = activity.getFileUrl();
+                } else {
+                    Toast.makeText(EditActivity.this, "No se pudo cargar la actividad.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(EditActivity.this, "Error al cargar datos.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
 
     private void showDateTimePicker() {
@@ -135,6 +166,7 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             fileUri = data.getData();
             Toast.makeText(this, "Archivo seleccionado: " + fileUri.getLastPathSegment(), Toast.LENGTH_SHORT).show();
@@ -162,12 +194,21 @@ public class EditActivity extends AppCompatActivity {
         updates.put("capacitacion", updatedCapacitacion);
 
         if (fileUri != null) {
+            // Si hay un nuevo archivo, lo subimos y actualizamos el fileUrl
             StorageReference fileRef = storageReference.child(fileUri.getLastPathSegment());
-            fileRef.putFile(fileUri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                updates.put("fileUrl", uri.toString());
-                saveToDatabase(updates);
-            }));
+            fileRef.putFile(fileUri).addOnSuccessListener(taskSnapshot ->
+                    fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        updates.put("fileUrl", uri.toString());
+                        saveToDatabase(updates);
+                    })
+            ).addOnFailureListener(e -> {
+                Toast.makeText(EditActivity.this, "Error al subir el archivo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         } else {
+            // Si no se seleccionó un nuevo archivo, conservamos el fileUrl existente
+            if (fileUrl != null) {
+                updates.put("fileUrl", fileUrl);
+            }
             saveToDatabase(updates);
         }
     }
@@ -177,11 +218,14 @@ public class EditActivity extends AppCompatActivity {
             databaseReference.child(activityId).updateChildren(updates).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(EditActivity.this, "Actividad actualizada con éxito", Toast.LENGTH_SHORT).show();
-                    finish();
+                    setResult(RESULT_OK); // Indica que los cambios se realizaron con éxito
+                    finish(); // Cierra EditActivity y vuelve a ActivityDetailActivity
                 } else {
                     Toast.makeText(EditActivity.this, "Error al actualizar la actividad", Toast.LENGTH_SHORT).show();
                 }
             });
+        } else {
+            Toast.makeText(EditActivity.this, "Error: activityId es nulo.", Toast.LENGTH_SHORT).show();
         }
     }
 }

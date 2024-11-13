@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,126 +35,127 @@ public class HomeActivity extends AppCompatActivity {
     private List<EventActivity> activitiesList;
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
+    private Set<CalendarDay> decoratedDates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Inicializar FirebaseAuth
+        // Inicializar FirebaseAuth y vistas
         auth = FirebaseAuth.getInstance();
-
-        // Inicializar vistas
         calendarView = findViewById(R.id.calendarView);
         activitiesRecyclerView = findViewById(R.id.activitiesRecyclerView);
         createActivityButton = findViewById(R.id.createActivityButton);
         historyButton = findViewById(R.id.historyButton);
         settingsButton = findViewById(R.id.settingsButton);
 
-        // Inicializar lista y adaptador para RecyclerView
+        // Configurar RecyclerView
         activitiesList = new ArrayList<>();
-        activitiesAdapter = new ActivitiesAdapter(this, new ArrayList<>());
+        activitiesAdapter = new ActivitiesAdapter(this, new ArrayList<>(), this::onActivitySelected);
         activitiesRecyclerView.setAdapter(activitiesAdapter);
         activitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Referencia a Firebase para cargar actividades del usuario autenticado
+        // Configurar base de datos de Firebase
         String userId = auth.getCurrentUser().getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference("activities").child(userId);
+        decoratedDates = new HashSet<>();
+
+        // Escuchar cambios en la base de datos en tiempo real
+        setupRealtimeUpdates();
 
         // Configurar escucha para cambio de fecha en el calendario
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             List<EventActivity> activitiesForDate = getActivitiesForDate(date);
             activitiesAdapter.updateActivities(activitiesForDate);
-            activitiesAdapter.notifyDataSetChanged();
         });
 
-        // Configurar navegación
-        historyButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, HistoryActivity.class);
-            startActivity(intent);
-        });
-
-        settingsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        });
-
-        createActivityButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
-            startActivity(intent);
-        });
-
-        // Cargar actividades de Firebase
-        loadActivitiesFromFirebase();
+        // Configurar botones de navegación
+        createActivityButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, CreateActivity.class)));
+        historyButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, HistoryActivity.class)));
+        settingsButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, SettingsActivity.class)));
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadActivitiesFromFirebase();
+    private void onActivitySelected(EventActivity activity) {
+        Intent intent = new Intent(this, ActivityDetailActivity.class);
+        intent.putExtra("activityId", activity.getActivityId());
+        startActivityForResult(intent, 2); // Cambiamos a 'startActivityForResult' para recibir un resultado
     }
 
-    private void loadActivitiesFromFirebase() {
+    private void setupRealtimeUpdates() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 activitiesList.clear();
-                Set<CalendarDay> dates = new HashSet<>();
+                decoratedDates.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     EventActivity activity = snapshot.getValue(EventActivity.class);
                     if (activity != null) {
+                        activity.setActivityId(snapshot.getKey());
                         activitiesList.add(activity);
-
-                        String fullDate = activity.getFecha();
-                        if (fullDate != null && fullDate.startsWith("Fecha:")) {
-                            String[] dateTimeParts = fullDate.split(" ");
-                            if (dateTimeParts.length >= 2) {
-                                String[] dateParts = dateTimeParts[1].split("/");
-                                if (dateParts.length == 3) {
-                                    try {
-                                        int day = Integer.parseInt(dateParts[0]);
-                                        int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
-                                        int year = Integer.parseInt(dateParts[2]);
-                                        dates.add(CalendarDay.from(year, month, day));
-                                    } catch (NumberFormatException e) {
-                                        Log.e("HomeActivity", "Error en el formato de la fecha: " + fullDate);
-                                    }
-                                }
-                            }
-                        }
+                        updateDecoratedDates(activity);
                     }
                 }
 
-                calendarView.removeDecorators();
-                calendarView.addDecorator(new EventDecorator(0xFFE57373, dates));
-                Log.d("HomeActivity", "Fechas decoradas: " + dates);
-                activitiesAdapter.notifyDataSetChanged();
+                // Actualizamos tanto el calendario como la lista de actividades
+                refreshCalendarAndActivities();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(HomeActivity.this, "Error al cargar las actividades", Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(HomeActivity.this, "Error al sincronizar datos", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateDecoratedDates(EventActivity activity) {
+        // Agregar la fecha de la actividad actualizada al conjunto de decoraciones del calendario
+        String fullDate = activity.getFecha();
+        if (fullDate != null && fullDate.startsWith("Fecha:")) {
+            String[] dateTimeParts = fullDate.split(" ");
+            if (dateTimeParts.length >= 2) {
+                String[] dateParts = dateTimeParts[1].split("/");
+                if (dateParts.length == 3) {
+                    try {
+                        int day = Integer.parseInt(dateParts[0]);
+                        int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
+                        int year = Integer.parseInt(dateParts[2]);
+                        decoratedDates.add(CalendarDay.from(year, month, day));
+                    } catch (NumberFormatException e) {
+                        Log.e("HomeActivity", "Error en el formato de la fecha: " + fullDate);
+                    }
+                }
+            }
+        }
+    }
+
+    private void refreshCalendarAndActivities() {
+        calendarView.removeDecorators();
+        calendarView.addDecorator(new EventDecorator(0xFFE57373, decoratedDates));
+        activitiesAdapter.updateActivities(new ArrayList<>(activitiesList));
     }
 
     private List<EventActivity> getActivitiesForDate(CalendarDay date) {
         List<EventActivity> activitiesOnDate = new ArrayList<>();
         String selectedDate = date.getDay() + "/" + (date.getMonth() + 1) + "/" + date.getYear();
-        Log.d("HomeActivity", "Fecha seleccionada: " + selectedDate);
-
         for (EventActivity activity : activitiesList) {
             String fullDate = activity.getFecha();
             if (fullDate != null && fullDate.startsWith("Fecha:")) {
-                String activityDate = fullDate.split(" ")[1]; // Extrae solo la fecha
-                Log.d("HomeActivity", "Comparando fecha de actividad: " + activityDate);
+                String activityDate = fullDate.split(" ")[1];
                 if (activityDate.equals(selectedDate)) {
                     activitiesOnDate.add(activity);
                 }
             }
         }
-        Log.d("HomeActivity", "Actividades en la fecha seleccionada: " + activitiesOnDate.size());
         return activitiesOnDate;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            refreshCalendarAndActivities(); // Refrescar vista al volver desde el detalle
+        }
     }
 }
