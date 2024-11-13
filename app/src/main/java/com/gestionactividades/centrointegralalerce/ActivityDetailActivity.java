@@ -9,13 +9,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// Importaciones necesarias
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase; // Asegúrate de tener esta importación
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class ActivityDetailActivity extends AppCompatActivity {
@@ -23,11 +25,12 @@ public class ActivityDetailActivity extends AppCompatActivity {
     private TextView activityNameTextView, activityDateLocationTextView;
     private TextView providerTextView, beneficiariesTextView;
     private TextView cupoTextView, capacitacionTextView;
-    private Button fileButton, backButton, editActivityButton;
+    private TextView rescheduleHistoryTextView; // Nuevo TextView para el historial de reprogramaciones
+    private Button fileButton, backButton, editActivityButton, rescheduleActivityButton;
 
     private DatabaseReference databaseReference;
     private String activityId;
-    private String userId; // Agregamos esta variable para mantener el userId
+    private String userId; // Variable para mantener el userId
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +44,11 @@ public class ActivityDetailActivity extends AppCompatActivity {
         beneficiariesTextView = findViewById(R.id.activityBeneficiariesTextView);
         cupoTextView = findViewById(R.id.activityCupoTextView);
         capacitacionTextView = findViewById(R.id.activityCapacitacionTextView);
+        rescheduleHistoryTextView = findViewById(R.id.rescheduleHistoryTextView); // Nuevo TextView
         fileButton = findViewById(R.id.activityFileButton);
         backButton = findViewById(R.id.backButton);
         editActivityButton = findViewById(R.id.editActivityButton);
+        rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton); // Nuevo botón "Reagendar"
 
         // Obtener el activityId desde el Intent
         activityId = getIntent().getStringExtra("activityId");
@@ -66,6 +71,13 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             });
 
+            // Configurar el botón "Reagendar" para navegar a RescheduleActivity
+            rescheduleActivityButton.setOnClickListener(v -> {
+                Intent intent = new Intent(ActivityDetailActivity.this, RescheduleActivity.class);
+                intent.putExtra("activityId", activityId);
+                startActivityForResult(intent, 2);
+            });
+
             // Cargar los detalles de la actividad
             loadActivityDetails();
         } else {
@@ -75,19 +87,19 @@ public class ActivityDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK) {
-            loadActivityDetails(); // Recargar detalles si hubo cambios
+        if ((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK) {
+            loadActivityDetails(); // Recargar detalles si hubo cambios o reprogramación
             setResult(RESULT_OK); // Indicar a HomeActivity que debe actualizarse
         }
     }
 
     private void loadActivityDetails() {
         // Asegurarse de que la referencia incluye el userId y activityId correctos
-        DatabaseReference activityRef = FirebaseDatabase.getInstance().getReference("activities").child(userId).child(activityId);
+        DatabaseReference activityRef = databaseReference;
 
-        activityRef.addValueEventListener(new ValueEventListener() { // Cambiamos a addValueEventListener para escuchar cambios en tiempo real
+        activityRef.addValueEventListener(new ValueEventListener() { // Escuchar cambios en tiempo real
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 EventActivity activity = dataSnapshot.getValue(EventActivity.class);
@@ -103,6 +115,21 @@ public class ActivityDetailActivity extends AppCompatActivity {
                     beneficiariesTextView.setText(activity.getBeneficiarios() != null ? activity.getBeneficiarios() : "Sin beneficiarios");
                     cupoTextView.setText(activity.getCupo() != null ? activity.getCupo() : "Sin cupo");
                     capacitacionTextView.setText(activity.getCapacitacion() != null ? activity.getCapacitacion() : "Sin capacitación");
+
+                    // Mostrar el historial de reprogramaciones si existe
+                    if (activity.getReschedules() != null && !activity.getReschedules().isEmpty()) {
+                        StringBuilder history = new StringBuilder();
+                        for (EventActivity.RescheduleInfo reschedule : activity.getReschedules()) {
+                            history.append("Fecha: ").append(reschedule.getDateTime())
+                                    .append("\nMotivo: ").append(reschedule.getReason())
+                                    .append("\n\n");
+                        }
+                        rescheduleHistoryTextView.setText(history.toString());
+                        rescheduleHistoryTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        rescheduleHistoryTextView.setText("No hay reprogramaciones.");
+                        rescheduleHistoryTextView.setVisibility(View.GONE); // Ocultar si no hay reprogramaciones
+                    }
 
                     // Configurar botón para abrir archivo si existe URL
                     if (activity.getFileUrl() != null && !activity.getFileUrl().isEmpty()) {

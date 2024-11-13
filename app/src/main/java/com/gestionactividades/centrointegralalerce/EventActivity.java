@@ -1,7 +1,9 @@
 package com.gestionactividades.centrointegralalerce;
 
+import java.util.List;
+
 public class EventActivity {
-    private String activityId; // Nuevo campo para el ID de la actividad
+    private String activityId; // ID de la actividad
     private String name;
     private String fecha;
     private String lugar;
@@ -12,13 +14,15 @@ public class EventActivity {
     private String beneficiarios;
     private String cupo;
     private String capacitacion;
+    private List<RescheduleInfo> reschedules; // Lista de reprogramaciones
 
     // Constructor vacío necesario para Firebase
     public EventActivity() {}
 
-    // Constructor completo que incluye el activityId
+    // Constructor completo que incluye todos los campos
     public EventActivity(String activityId, String name, String fecha, String lugar, String description, String oferentes,
-                         String type, String fileUrl, String beneficiarios, String cupo, String capacitacion) {
+                         String type, String fileUrl, String beneficiarios, String cupo, String capacitacion,
+                         List<RescheduleInfo> reschedules) {
         this.activityId = activityId; // Asignar el activityId
         this.name = name;
         this.fecha = fecha;
@@ -30,27 +34,71 @@ public class EventActivity {
         this.beneficiarios = beneficiarios;
         this.cupo = cupo;
         this.capacitacion = capacitacion;
+        this.reschedules = reschedules;
     }
 
-    // Getter para activityId
+    // Getter y Setter para activityId
     public String getActivityId() {
         return activityId;
     }
 
-    // Otros getters
-    public String getName() { return name; }
-    public String getFecha() { return fecha; }
-    public String getLugar() { return lugar; }
-    public String getDescription() { return description; }
-    public String getOferentes() { return oferentes; }
-    public String getType() { return type; }
-    public String getFileUrl() { return fileUrl; }
-    public String getBeneficiarios() { return beneficiarios; }
-    public String getCupo() { return cupo; }
-    public String getCapacitacion() { return capacitacion; }
-
-    // Setter para activityId en caso de ser necesario
     public void setActivityId(String activityId) {
         this.activityId = activityId;
+    }
+
+    // Otros getters y setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
+
+    public String getLugar() { return lugar; }
+    public void setLugar(String lugar) { this.lugar = lugar; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getOferentes() { return oferentes; }
+    public void setOferentes(String oferentes) { this.oferentes = oferentes; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getFileUrl() { return fileUrl; }
+    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+
+    public String getBeneficiarios() { return beneficiarios; }
+    public void setBeneficiarios(String beneficiarios) { this.beneficiarios = beneficiarios; }
+
+    public String getCupo() { return cupo; }
+    public void setCupo(String cupo) { this.cupo = cupo; }
+
+    public String getCapacitacion() { return capacitacion; }
+    public void setCapacitacion(String capacitacion) { this.capacitacion = capacitacion; }
+
+    public List<RescheduleInfo> getReschedules() { return reschedules; }
+    public void setReschedules(List<RescheduleInfo> reschedules) { this.reschedules = reschedules; }
+
+    // Clase interna para la información de reprogramación
+    public static class RescheduleInfo {
+        private String dateTime;
+        private String reason;
+
+        // Constructor vacío necesario para Firebase
+        public RescheduleInfo() {}
+
+        // Constructor con parámetros
+        public RescheduleInfo(String dateTime, String reason) {
+            this.dateTime = dateTime;
+            this.reason = reason;
+        }
+
+        // Getters y Setters
+        public String getDateTime() { return dateTime; }
+        public void setDateTime(String dateTime) { this.dateTime = dateTime; }
+
+        public String getReason() { return reason; }
+        public void setReason(String reason) { this.reason = reason; }
     }
 }

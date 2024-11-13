@@ -128,6 +128,16 @@
                     app:rippleColor="@color/colorSecondary"
                     android:textColor="@color/colorOnPrimary" />
 
+                <!-- Aquí agregamos el TextView para el historial de reprogramaciones -->
+                <TextView
+                    android:id="@+id/rescheduleHistoryTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Historial de Reprogramaciones"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:padding="8dp"
+                    android:visibility="gone" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -162,14 +172,9 @@
 
             <Button
                 android:id="@+id/rescheduleActivityButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Reagendar"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+                android:text="Reagendar" />
 
             <Button
                 android:id="@+id/cancelActivityButton"
