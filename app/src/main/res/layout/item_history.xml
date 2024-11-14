@@ -1,6 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemHistoryLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/activityNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Nombre de la Actividad"/>
+
+    <TextView
+        android:id="@+id/activityDateTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha/Hora"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/activityStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estado"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/activityCancellationReasonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Razón de cancelación"
+        android:paddingTop="4dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/activityReschedulesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reprogramaciones"
+        android:paddingTop="4dp"
+        android:visibility="gone"/>
+
+</LinearLayout>
