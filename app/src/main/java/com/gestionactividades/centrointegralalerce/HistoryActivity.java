@@ -2,7 +2,11 @@ package com.gestionactividades.centrointegralalerce;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,10 +28,12 @@ public class HistoryActivity extends AppCompatActivity {
     private RecyclerView historyRecyclerView;
     private HistoryAdapter historyAdapter;
     private List<HistoryItem> historyItemList;
+    private List<HistoryItem> allItems; // Lista original sin filtros
     private DatabaseReference activitiesRef;
     private DatabaseReference cancellationsRef;
     private String userId;
 
+    private Spinner filterSpinner;
     private Button backButton;
 
     @Override
@@ -35,8 +41,8 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        // Vincular vistas
         historyRecyclerView = findViewById(R.id.historyRecyclerView);
+        filterSpinner = findViewById(R.id.filterSpinner);
         backButton = findViewById(R.id.backButton);
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -45,24 +51,48 @@ public class HistoryActivity extends AppCompatActivity {
 
         // Configurar el RecyclerView
         historyItemList = new ArrayList<>();
+        allItems = new ArrayList<>(); // Inicializa la lista de todos los elementos
         historyAdapter = new HistoryAdapter(this, historyItemList);
         historyRecyclerView.setAdapter(historyAdapter);
         historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Configurar opciones de filtro en el Spinner
+        setupFilterSpinner();
 
         // Cargar historial
         loadHistory();
 
         // Configurar el botón "Volver"
         backButton.setOnClickListener(v -> {
-            // Regresa a HomeActivity
             Intent intent = new Intent(HistoryActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
         });
     }
 
+    private void setupFilterSpinner() {
+        String[] filterOptions = {"Todas", "Canceladas", "Reagendadas"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, filterOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setAdapter(adapter);
+
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedFilter = (String) parent.getItemAtPosition(position);
+                applyFilter(selectedFilter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                applyFilter("Todas");
+            }
+        });
+    }
+
     private void loadHistory() {
         // Limpiar la lista para evitar duplicados
+        allItems.clear();
         historyItemList.clear();
 
         // Recuperar actividades actuales
@@ -79,8 +109,14 @@ public class HistoryActivity extends AppCompatActivity {
                         item.setTime(activity.getHora());
                         item.setCanceled(false);
                         item.setCancellationReason(null);
-                        item.setReprogrammedReasons(null);
-                        historyItemList.add(item);
+
+                        // Agregar la lista de reprogramaciones, si existe
+                        List<EventActivity.RescheduleInfo> reprogrammedList = activity.getReschedules();
+                        if (reprogrammedList != null && !reprogrammedList.isEmpty()) {
+                            item.setReprogrammedReasons(reprogrammedList);
+                        }
+
+                        allItems.add(item);
                     }
                 }
 
@@ -105,11 +141,11 @@ public class HistoryActivity extends AppCompatActivity {
                             item.setCancellationReason(String.format("Cancelada el %s. Motivo: %s", cancellationDate, cancellationReason));
                             item.setReprogrammedReasons(null);
 
-                            historyItemList.add(item);
+                            allItems.add(item);
                         }
 
-                        // Notificar al adaptador que los datos han cambiado
-                        historyAdapter.notifyDataSetChanged();
+                        // Aplicar el filtro inicial una vez que todos los datos se han cargado
+                        applyFilter(filterSpinner.getSelectedItem().toString());
                     }
 
                     @Override
@@ -125,4 +161,19 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void applyFilter(String filter) {
+        historyItemList.clear();
+
+        for (HistoryItem item : allItems) {
+            if (filter.equals("Todas") ||
+                    (filter.equals("Canceladas") && item.isCanceled()) ||
+                    (filter.equals("Reagendadas") && item.getReprogrammedReasons() != null && !item.getReprogrammedReasons().isEmpty())) {
+                historyItemList.add(item);
+            }
+        }
+        historyAdapter.notifyDataSetChanged();
+    }
+
 }
