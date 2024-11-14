@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,12 +26,12 @@ public class ActivityDetailActivity extends AppCompatActivity {
     private TextView activityNameTextView, activityDateLocationTextView;
     private TextView providerTextView, beneficiariesTextView;
     private TextView cupoTextView, capacitacionTextView;
-    private TextView rescheduleHistoryTextView; // TextView para el historial o motivo de cancelación
     private Button fileButton, backButton, editActivityButton, rescheduleActivityButton, cancelActivityButton;
 
-    private DatabaseReference databaseReference;
+    private DatabaseReference activityRef;
+    private DatabaseReference cancellationsRef;
     private String activityId;
-    private String userId; // Variable para mantener el userId
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +45,11 @@ public class ActivityDetailActivity extends AppCompatActivity {
         beneficiariesTextView = findViewById(R.id.activityBeneficiariesTextView);
         cupoTextView = findViewById(R.id.activityCupoTextView);
         capacitacionTextView = findViewById(R.id.activityCapacitacionTextView);
-        rescheduleHistoryTextView = findViewById(R.id.rescheduleHistoryTextView); // TextView para mostrar motivo de cancelación o reprogramaciones
         fileButton = findViewById(R.id.activityFileButton);
         backButton = findViewById(R.id.backButton);
         editActivityButton = findViewById(R.id.editActivityButton);
         rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton);
-        cancelActivityButton = findViewById(R.id.cancelActivityButton); // Nuevo botón "Cancelar Actividad"
+        cancelActivityButton = findViewById(R.id.cancelActivityButton);
 
         // Obtener el activityId desde el Intent
         activityId = getIntent().getStringExtra("activityId");
@@ -57,7 +57,8 @@ public class ActivityDetailActivity extends AppCompatActivity {
         // Verifica que activityId no sea nulo para proceder
         if (activityId != null) {
             userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            databaseReference = FirebaseDatabase.getInstance().getReference("activities").child(userId).child(activityId);
+            activityRef = FirebaseDatabase.getInstance().getReference("activities").child(userId).child(activityId);
+            cancellationsRef = FirebaseDatabase.getInstance().getReference("cancellations").child(userId).child(activityId);
 
             Log.d("ActivityDetailActivity", "activityId: " + activityId);
             Log.d("ActivityDetailActivity", "userId: " + userId);
@@ -72,7 +73,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             });
 
-            // Configurar el botón "Reagendar" para navegar a RescheduleActivity
+            // Configurar el botón "Reagendar" para navegar a RescheduleActivity (Si la funcionalidad existe)
             rescheduleActivityButton.setOnClickListener(v -> {
                 Intent intent = new Intent(ActivityDetailActivity.this, RescheduleActivity.class);
                 intent.putExtra("activityId", activityId);
@@ -104,56 +105,43 @@ public class ActivityDetailActivity extends AppCompatActivity {
     }
 
     private void loadActivityDetails() {
-        // Asegurarse de que la referencia incluye el userId y activityId correctos
-        DatabaseReference activityRef = databaseReference;
-
-        activityRef.addListenerForSingleValueEvent(new ValueEventListener() { // Escuchar una única vez
+        // Revisar si la actividad existe todavía
+        activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    // La actividad ha sido eliminada (cancelada)
+                    fetchCancellationReason();
+                    return;
+                }
+
                 EventActivity activity = dataSnapshot.getValue(EventActivity.class);
                 if (activity != null) {
                     Log.d("ActivityDetailActivity", "Datos de la actividad cargados: " + activity.getName());
 
                     // Actualizar los campos de la interfaz con los datos de Firebase
                     activityNameTextView.setText(activity.getName() != null ? activity.getName() : "Sin nombre");
-                    activityDateLocationTextView.setText(String.format("%s • %s",
-                            activity.getFecha() != null ? activity.getFecha() : "Sin fecha",
-                            activity.getLugar() != null ? activity.getLugar() : "Sin lugar"));
-                    providerTextView.setText(activity.getOferentes() != null ? activity.getOferentes() : "Sin proveedor");
-                    beneficiariesTextView.setText(activity.getBeneficiarios() != null ? activity.getBeneficiarios() : "Sin beneficiarios");
-                    cupoTextView.setText(activity.getCupo() != null ? activity.getCupo() : "Sin cupo");
-                    capacitacionTextView.setText(activity.getCapacitacion() != null ? activity.getCapacitacion() : "Sin capacitación");
 
-                    // Verificar si la actividad está cancelada
-                    if (activity.isCancelled()) {
-                        // Mostrar mensaje de cancelación
-                        Toast.makeText(ActivityDetailActivity.this, "Esta actividad ha sido cancelada.", Toast.LENGTH_LONG).show();
+                    String dateText = activity.getFecha() != null && !activity.getFecha().isEmpty() ? activity.getFecha() : "Sin fecha";
+                    String locationText = activity.getLugar() != null && !activity.getLugar().isEmpty() ? activity.getLugar() : "Sin lugar";
+                    activityDateLocationTextView.setText(String.format("%s • %s", dateText, locationText));
 
-                        // Deshabilitar botones que no aplican
-                        editActivityButton.setEnabled(false);
-                        rescheduleActivityButton.setEnabled(false);
-                        cancelActivityButton.setEnabled(false);
+                    String providerText = activity.getOferentes() != null && !activity.getOferentes().isEmpty() ? activity.getOferentes() : "Sin proveedor";
+                    providerTextView.setText(providerText);
 
-                        // Mostrar motivo y fecha de cancelación
-                        String cancellationInfo = "Actividad cancelada el " + activity.getCancellationDate() +
-                                "\nMotivo: " + activity.getCancellationReason();
-                        rescheduleHistoryTextView.setText(cancellationInfo);
-                        rescheduleHistoryTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        // Mostrar el historial de reprogramaciones si existe
-                        if (activity.getReschedules() != null && !activity.getReschedules().isEmpty()) {
-                            StringBuilder history = new StringBuilder();
-                            for (EventActivity.RescheduleInfo reschedule : activity.getReschedules()) {
-                                history.append("Fecha: ").append(reschedule.getDateTime())
-                                        .append("\nMotivo: ").append(reschedule.getReason())
-                                        .append("\n\n");
-                            }
-                            rescheduleHistoryTextView.setText(history.toString());
-                            rescheduleHistoryTextView.setVisibility(View.VISIBLE);
-                        } else {
-                            rescheduleHistoryTextView.setVisibility(View.GONE); // Ocultar si no hay reprogramaciones
-                        }
-                    }
+                    String beneficiariesText = activity.getBeneficiarios() != null && !activity.getBeneficiarios().isEmpty() ? activity.getBeneficiarios() : "Sin beneficiarios";
+                    beneficiariesTextView.setText(beneficiariesText);
+
+                    String cupoText = activity.getCupo() != null && !activity.getCupo().isEmpty() ? activity.getCupo() : "Sin cupo";
+                    cupoTextView.setText(cupoText);
+
+                    String capacitacionText = activity.getCapacitacion() != null && !activity.getCapacitacion().isEmpty() ? activity.getCapacitacion() : "Sin capacitación";
+                    capacitacionTextView.setText(capacitacionText);
+
+                    // Actividad no cancelada, habilitar botones
+                    editActivityButton.setEnabled(true);
+                    rescheduleActivityButton.setEnabled(true);
+                    cancelActivityButton.setEnabled(true);
 
                     // Configurar botón para abrir archivo si existe URL
                     if (activity.getFileUrl() != null && !activity.getFileUrl().isEmpty()) {
@@ -167,13 +155,59 @@ public class ActivityDetailActivity extends AppCompatActivity {
                     }
                 } else {
                     Toast.makeText(ActivityDetailActivity.this, "No se pudieron cargar los detalles.", Toast.LENGTH_SHORT).show();
-                    finish(); // Cierra la actividad si no se encuentran los detalles
+                    finish();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(ActivityDetailActivity.this, "Error de base de datos.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchCancellationReason() {
+        // Si la actividad ha sido eliminada, revisamos la sección 'cancellations' para obtener el motivo
+        DatabaseReference cancellationRef = FirebaseDatabase.getInstance().getReference("cancellations").child(userId).child(activityId);
+        cancellationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    // No hay información de cancelación
+                    Toast.makeText(ActivityDetailActivity.this, "La actividad ha sido cancelada y eliminada.", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+
+                String reason = snapshot.child("cancellationReason").getValue(String.class);
+                String date = snapshot.child("cancellationDate").getValue(String.class);
+
+                if (reason == null || reason.isEmpty()) {
+                    reason = "Sin motivo de cancelación";
+                }
+                if (date == null || date.isEmpty()) {
+                    date = "Fecha desconocida";
+                }
+
+                // Mostrar la información de cancelación
+                Toast.makeText(ActivityDetailActivity.this, "Esta actividad ha sido cancelada.", Toast.LENGTH_LONG).show();
+
+                // Puedes mostrar esta información en un TextView si lo deseas
+                // Por ejemplo: cancellationInfoTextView.setText(String.format("Motivo: %s\nFecha: %s", reason, date));
+                // cancellationInfoTextView.setVisibility(View.VISIBLE);
+
+                // Deshabilitar los botones
+                editActivityButton.setEnabled(false);
+                rescheduleActivityButton.setEnabled(false);
+                cancelActivityButton.setEnabled(false);
+
+                // Concluimos la actividad si lo deseas
+                // finish();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ActivityDetailActivity.this, "Error al recuperar la información de cancelación.", Toast.LENGTH_SHORT).show();
             }
         });
     }

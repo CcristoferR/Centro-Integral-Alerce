@@ -8,20 +8,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-// Importaciones necesarias
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth; // Asegúrate de tener esta importación
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase; // Asegúrate de tener esta importación
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class RescheduleActivity extends AppCompatActivity {
 
@@ -33,7 +33,8 @@ public class RescheduleActivity extends AppCompatActivity {
     private String userId;
     private DatabaseReference activityRef;
 
-    private String newDateTime;
+    private String selectedDate; // Fecha seleccionada en formato "dd/MM/yyyy"
+    private String selectedTime; // Hora seleccionada en formato "HH:mm"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +61,22 @@ public class RescheduleActivity extends AppCompatActivity {
         // Configurar botón para seleccionar nueva fecha y hora
         selectNewDateTimeButton.setOnClickListener(v -> showDateTimePicker());
 
-        // Configurar botón para guardar reprogramación
+        // Configurar botón para guardar la reprogramación
         saveRescheduleButton.setOnClickListener(v -> saveReschedule());
     }
 
     private void loadActivityDetails() {
         activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            // Implementar onDataChange y onCancelled para cargar los datos actuales
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 EventActivity activity = snapshot.getValue(EventActivity.class);
                 if (activity != null) {
-                    activityNameTextView.setText(activity.getName());
-                    currentDateTimeTextView.setText(activity.getFecha());
+                    activityNameTextView.setText(activity.getName() != null ? activity.getName() : "Sin nombre");
+
+                    // Mostrar la fecha/hora actual de la actividad
+                    String currentDate = activity.getFecha() != null ? activity.getFecha() : "Sin fecha";
+                    String currentTime = (activity.getHora() != null && !activity.getHora().isEmpty()) ? activity.getHora() : "Sin hora";
+                    currentDateTimeTextView.setText(String.format("Fecha Actual: %s\nHora Actual: %s", currentDate, currentTime));
                 } else {
                     Toast.makeText(RescheduleActivity.this, "No se pudo cargar la actividad.", Toast.LENGTH_SHORT).show();
                     finish();
@@ -90,26 +94,34 @@ public class RescheduleActivity extends AppCompatActivity {
     private void showDateTimePicker() {
         Calendar calendar = Calendar.getInstance();
 
-        new DatePickerDialog(this, (view, year, month, day) -> {
-            String date = day + "/" + (month + 1) + "/" + year;
+        // Seleccionar fecha
+        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
 
+            // Seleccionar hora
             new TimePickerDialog(this, (timeView, hour, minute) -> {
-                newDateTime = "Fecha: " + date + " Hora: " + hour + ":" + minute;
-                selectNewDateTimeButton.setText(newDateTime); // Mostrar la nueva fecha y hora seleccionada en el botón
+                selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+                selectNewDateTimeButton.setText(String.format("Nueva Fecha: %s\nNueva Hora: %s", selectedDate, selectedTime));
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
 
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     private void saveReschedule() {
-        String reason = reasonEditText.getText().toString();
+        String reason = reasonEditText.getText().toString().trim();
 
-        if (newDateTime == null || reason.isEmpty()) {
-            Toast.makeText(this, "Por favor, ingresa la nueva fecha/hora y el motivo.", Toast.LENGTH_SHORT).show();
+        if (selectedDate == null || selectedTime == null) {
+            Toast.makeText(this, "Por favor, selecciona la nueva fecha y hora.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Crear un objeto RescheduleInfo
+        if (reason.isEmpty()) {
+            Toast.makeText(this, "Por favor, ingresa el motivo de la reprogramación.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Crear un objeto RescheduleInfo con la nueva fecha y hora
+        String newDateTime = String.format("Fecha: %s, Hora: %s", selectedDate, selectedTime);
         EventActivity.RescheduleInfo rescheduleInfo = new EventActivity.RescheduleInfo(newDateTime, reason);
 
         // Actualizar la actividad en la base de datos
@@ -127,8 +139,9 @@ public class RescheduleActivity extends AppCompatActivity {
                     // Agregar la nueva reprogramación a la lista
                     reschedules.add(rescheduleInfo);
 
-                    // Actualizar los campos de la actividad
-                    activity.setFecha(newDateTime);
+                    // Actualizar los campos de la actividad con la nueva fecha/hora
+                    activity.setFecha(selectedDate);
+                    activity.setHora(selectedTime);
                     activity.setReschedules(reschedules);
 
                     // Guardar los cambios en la base de datos

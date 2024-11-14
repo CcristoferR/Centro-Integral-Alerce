@@ -24,6 +24,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
@@ -71,7 +72,10 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Configurar botones de navegación
-        createActivityButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, CreateActivity.class)));
+        createActivityButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, CreateActivity.class);
+            startActivityForResult(intent, 1);
+        });
         historyButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, HistoryActivity.class)));
         settingsButton.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, SettingsActivity.class)));
     }
@@ -79,7 +83,7 @@ public class HomeActivity extends AppCompatActivity {
     private void onActivitySelected(EventActivity activity) {
         Intent intent = new Intent(this, ActivityDetailActivity.class);
         intent.putExtra("activityId", activity.getActivityId());
-        startActivityForResult(intent, 2); // Cambiamos a 'startActivityForResult' para recibir un resultado
+        startActivityForResult(intent, 2);
     }
 
     private void setupRealtimeUpdates() {
@@ -110,21 +114,18 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateDecoratedDates(EventActivity activity) {
-        // Agregar la fecha de la actividad actualizada al conjunto de decoraciones del calendario
-        String fullDate = activity.getFecha();
-        if (fullDate != null && fullDate.startsWith("Fecha:")) {
-            String[] dateTimeParts = fullDate.split(" ");
-            if (dateTimeParts.length >= 2) {
-                String[] dateParts = dateTimeParts[1].split("/");
-                if (dateParts.length == 3) {
-                    try {
-                        int day = Integer.parseInt(dateParts[0]);
-                        int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
-                        int year = Integer.parseInt(dateParts[2]);
-                        decoratedDates.add(CalendarDay.from(year, month, day));
-                    } catch (NumberFormatException e) {
-                        Log.e("HomeActivity", "Error en el formato de la fecha: " + fullDate);
-                    }
+        String dateStr = activity.getFecha();
+        if (dateStr != null && !dateStr.isEmpty()) {
+            String[] dateParts = dateStr.split("/");
+            if (dateParts.length == 3) {
+                try {
+                    int day = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
+                    int year = Integer.parseInt(dateParts[2]);
+                    CalendarDay calendarDay = CalendarDay.from(year, month, day);
+                    decoratedDates.add(calendarDay);
+                } catch (NumberFormatException e) {
+                    Log.e("HomeActivity", "Error al parsear la fecha: " + dateStr, e);
                 }
             }
         }
@@ -133,17 +134,26 @@ public class HomeActivity extends AppCompatActivity {
     private void refreshCalendarAndActivities() {
         calendarView.removeDecorators();
         calendarView.addDecorator(new EventDecorator(0xFFE57373, decoratedDates));
-        activitiesAdapter.updateActivities(new ArrayList<>(activitiesList));
+        calendarView.invalidateDecorators(); // Forzar actualización del calendario
+
+        // Actualizar las actividades mostradas para la fecha seleccionada
+        CalendarDay selectedDate = calendarView.getSelectedDate();
+        if (selectedDate != null) {
+            List<EventActivity> activitiesForDate = getActivitiesForDate(selectedDate);
+            activitiesAdapter.updateActivities(activitiesForDate);
+        } else {
+            activitiesAdapter.updateActivities(new ArrayList<>(activitiesList));
+        }
     }
 
     private List<EventActivity> getActivitiesForDate(CalendarDay date) {
         List<EventActivity> activitiesOnDate = new ArrayList<>();
-        String selectedDate = date.getDay() + "/" + (date.getMonth() + 1) + "/" + date.getYear();
+        String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", date.getDay(), date.getMonth() + 1, date.getYear());
+
         for (EventActivity activity : activitiesList) {
-            String fullDate = activity.getFecha();
-            if (fullDate != null && fullDate.startsWith("Fecha:")) {
-                String activityDate = fullDate.split(" ")[1];
-                if (activityDate.equals(selectedDate)) {
+            String dateStr = activity.getFecha();
+            if (dateStr != null && !dateStr.isEmpty()) {
+                if (dateStr.equals(selectedDate)) {
                     activitiesOnDate.add(activity);
                 }
             }
@@ -154,8 +164,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // Si volvemos de CreateActivity y la actividad se creó con éxito (RESULT_OK), actualizamos la UI
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            refreshCalendarAndActivities();
+        }
+        // Si volvemos de ActivityDetailActivity y la actividad se modificó/canceló (RESULT_OK), actualizamos la UI
         if (requestCode == 2 && resultCode == RESULT_OK) {
-            refreshCalendarAndActivities(); // Refrescar vista al volver desde el detalle
+            refreshCalendarAndActivities();
         }
     }
 }

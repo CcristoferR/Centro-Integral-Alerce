@@ -24,8 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CreateActivity extends AppCompatActivity {
@@ -53,6 +55,9 @@ public class CreateActivity extends AppCompatActivity {
             "Práctica profesional",
             "Diagnóstico"
     };
+
+    private String selectedDate; // Fecha en formato "dd/MM/yyyy"
+    private String selectedTime; // Hora en formato "HH:mm"
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,39 +95,38 @@ public class CreateActivity extends AppCompatActivity {
         capacitacionSpinner.setAdapter(capacitacionAdapter);
 
         // Configurar listeners para los botones
-        selectDateButton.setOnClickListener(v -> showPeriodicityDialog());
+        selectDateButton.setOnClickListener(v -> showDateTimeDialog());
         uploadFileButton.setOnClickListener(v -> openFilePicker());
         saveActivityButton.setOnClickListener(v -> saveActivityWithFile());
     }
 
-    private void showPeriodicityDialog() {
+    private void showDateTimeDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_periodicity_options, null);
-        Spinner frequencySpinner = dialogView.findViewById(R.id.frequencySpinner);
         Button dateButton = dialogView.findViewById(R.id.selectDateButton);
         Button timeButton = dialogView.findViewById(R.id.selectTimeButton);
 
         dateButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             new DatePickerDialog(this, (view, year, month, day) -> {
-                dateButton.setText(day + "/" + (month + 1) + "/" + year);
+                selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+                dateButton.setText(selectedDate);
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
         timeButton.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             new TimePickerDialog(this, (view, hour, minute) -> {
-                timeButton.setText(hour + ":" + minute);
+                selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+                timeButton.setText(selectedTime);
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
         });
 
         new AlertDialog.Builder(this)
-                .setTitle("Configurar Fecha, Hora y Periodicidad")
+                .setTitle("Configurar Fecha y Hora")
                 .setView(dialogView)
                 .setPositiveButton("Aceptar", (dialog, which) -> {
-                    String selectedDate = dateButton.getText().toString();
-                    String selectedTime = timeButton.getText().toString();
-                    if (!selectedDate.isEmpty() && !selectedTime.isEmpty()) {
-                        selectedDatesTextView.setText("Fecha: " + selectedDate + " Hora: " + selectedTime);
+                    if (selectedDate != null && selectedTime != null) {
+                        selectedDatesTextView.setText(String.format("Fecha: %s Hora: %s", selectedDate, selectedTime));
                     } else {
                         Toast.makeText(this, "Por favor selecciona una fecha y hora", Toast.LENGTH_SHORT).show();
                     }
@@ -149,15 +153,16 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     private void saveActivityWithFile() {
-        String activityName = activityNameEditText.getText().toString();
-        String fecha = selectedDatesTextView.getText().toString();
+        String activityName = activityNameEditText.getText().toString().trim();
+        String date = selectedDate; // Fecha en formato "dd/MM/yyyy"
+        String time = selectedTime; // Hora en formato "HH:mm"
         String lugar = locationSpinner.getSelectedItem() != null ? locationSpinner.getSelectedItem().toString() : "Sin lugar";
-        String oferentes = providerEditText.getText().toString();
-        String beneficiarios = beneficiariesEditText.getText().toString();
-        String cupo = cupoEditText.getText().toString();
+        String oferentes = providerEditText.getText().toString().trim();
+        String beneficiarios = beneficiariesEditText.getText().toString().trim();
+        String cupo = cupoEditText.getText().toString().trim();
         String capacitacion = capacitacionSpinner.getSelectedItem() != null ? capacitacionSpinner.getSelectedItem().toString() : "Sin capacitación";
 
-        if (activityName.isEmpty() || fileUri == null || fecha.isEmpty() || cupo.isEmpty()) {
+        if (activityName.isEmpty() || fileUri == null || date == null || date.isEmpty() || cupo.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -180,17 +185,18 @@ public class CreateActivity extends AppCompatActivity {
                     String fileUrl = uri.toString();
                     Toast.makeText(this, "Archivo subido con éxito", Toast.LENGTH_SHORT).show();
 
-                    // Guardar la información de la actividad en Firebase Realtime Database
+                    // Crear un mapa con los datos de la actividad
                     Map<String, Object> activityData = new HashMap<>();
+                    activityData.put("activityId", activityId);
                     activityData.put("name", activityName);
                     activityData.put("fileUrl", fileUrl);
-                    activityData.put("fecha", fecha);
+                    activityData.put("fecha", date); // Guardamos la fecha seleccionada en formato "dd/MM/yyyy"
+                    activityData.put("hora", time); // Guardamos la hora seleccionada en formato "HH:mm"
                     activityData.put("lugar", lugar);
                     activityData.put("oferentes", oferentes.isEmpty() ? "Sin proveedor" : oferentes);
                     activityData.put("beneficiarios", beneficiarios.isEmpty() ? "Sin beneficiarios" : beneficiarios);
                     activityData.put("cupo", cupo);
                     activityData.put("capacitacion", capacitacion);
-                    activityData.put("activityId", activityId); // Añadir el ID a la estructura
 
                     if (activityId != null) {
                         userActivitiesRef.child(activityId).setValue(activityData)
@@ -198,9 +204,8 @@ public class CreateActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(this, "Actividad y archivo guardados correctamente en Firebase", Toast.LENGTH_LONG).show();
                                         // Finalizar la actividad o navegar a otra pantalla
-                                        Intent intent = new Intent(CreateActivity.this, ActivityDetailActivity.class);
-                                        intent.putExtra("activityId", activityId);
-                                        startActivity(intent);
+                                        Intent intent = new Intent(CreateActivity.this, HomeActivity.class);
+                                        setResult(RESULT_OK, intent);
                                         finish();
                                     } else {
                                         Toast.makeText(this, "Error al guardar la actividad en Firebase Database", Toast.LENGTH_LONG).show();
@@ -217,6 +222,5 @@ public class CreateActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al subir archivo a Firebase Storage: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
-
 
 }
