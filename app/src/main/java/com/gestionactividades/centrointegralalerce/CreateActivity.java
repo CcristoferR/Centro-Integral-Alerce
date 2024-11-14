@@ -24,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -97,7 +96,7 @@ public class CreateActivity extends AppCompatActivity {
         // Configurar listeners para los botones
         selectDateButton.setOnClickListener(v -> showDateTimeDialog());
         uploadFileButton.setOnClickListener(v -> openFilePicker());
-        saveActivityButton.setOnClickListener(v -> saveActivityWithFile());
+        saveActivityButton.setOnClickListener(v -> saveActivity());
     }
 
     private void showDateTimeDialog() {
@@ -152,75 +151,66 @@ public class CreateActivity extends AppCompatActivity {
         }
     }
 
-    private void saveActivityWithFile() {
+    private void saveActivity() {
         String activityName = activityNameEditText.getText().toString().trim();
-        String date = selectedDate; // Fecha en formato "dd/MM/yyyy"
-        String time = selectedTime; // Hora en formato "HH:mm"
+        String date = selectedDate;
+        String time = selectedTime;
         String lugar = locationSpinner.getSelectedItem() != null ? locationSpinner.getSelectedItem().toString() : "Sin lugar";
         String oferentes = providerEditText.getText().toString().trim();
         String beneficiarios = beneficiariesEditText.getText().toString().trim();
         String cupo = cupoEditText.getText().toString().trim();
         String capacitacion = capacitacionSpinner.getSelectedItem() != null ? capacitacionSpinner.getSelectedItem().toString() : "Sin capacitación";
 
-        if (activityName.isEmpty() || fileUri == null || date == null || date.isEmpty() || cupo.isEmpty()) {
+        if (activityName.isEmpty() || date == null || date.isEmpty() || cupo.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Obtener UID de usuario
         String userId = auth.getCurrentUser().getUid();
-
-        // Crear referencia bajo el UID del usuario
         DatabaseReference userActivitiesRef = databaseReference.child(userId);
-
-        // Generar un nuevo ID único para la actividad
         String activityId = userActivitiesRef.push().getKey();
 
-        Toast.makeText(this, "Subiendo archivo a Firebase Storage...", Toast.LENGTH_SHORT).show();
+        Map<String, Object> activityData = new HashMap<>();
+        activityData.put("activityId", activityId);
+        activityData.put("name", activityName);
+        activityData.put("fecha", date);
+        activityData.put("hora", time);
+        activityData.put("lugar", lugar);
+        activityData.put("oferentes", oferentes.isEmpty() ? "Sin proveedor" : oferentes);
+        activityData.put("beneficiarios", beneficiarios.isEmpty() ? "Sin beneficiarios" : beneficiarios);
+        activityData.put("cupo", cupo);
+        activityData.put("capacitacion", capacitacion);
 
-        // Subir el archivo a Firebase Storage
-        StorageReference fileRef = storageReference.child(fileUri.getLastPathSegment());
-        fileRef.putFile(fileUri)
-                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String fileUrl = uri.toString();
-                    Toast.makeText(this, "Archivo subido con éxito", Toast.LENGTH_SHORT).show();
-
-                    // Crear un mapa con los datos de la actividad
-                    Map<String, Object> activityData = new HashMap<>();
-                    activityData.put("activityId", activityId);
-                    activityData.put("name", activityName);
-                    activityData.put("fileUrl", fileUrl);
-                    activityData.put("fecha", date); // Guardamos la fecha seleccionada en formato "dd/MM/yyyy"
-                    activityData.put("hora", time); // Guardamos la hora seleccionada en formato "HH:mm"
-                    activityData.put("lugar", lugar);
-                    activityData.put("oferentes", oferentes.isEmpty() ? "Sin proveedor" : oferentes);
-                    activityData.put("beneficiarios", beneficiarios.isEmpty() ? "Sin beneficiarios" : beneficiarios);
-                    activityData.put("cupo", cupo);
-                    activityData.put("capacitacion", capacitacion);
-
-                    if (activityId != null) {
-                        userActivitiesRef.child(activityId).setValue(activityData)
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(this, "Actividad y archivo guardados correctamente en Firebase", Toast.LENGTH_LONG).show();
-                                        // Finalizar la actividad o navegar a otra pantalla
-                                        Intent intent = new Intent(CreateActivity.this, HomeActivity.class);
-                                        setResult(RESULT_OK, intent);
-                                        finish();
-                                    } else {
-                                        Toast.makeText(this, "Error al guardar la actividad en Firebase Database", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Error específico al guardar en Firebase Database: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                });
-                    } else {
-                        Toast.makeText(this, "Error: no se pudo generar el ID de la actividad", Toast.LENGTH_LONG).show();
-                    }
-                }))
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al subir archivo a Firebase Storage: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
+        if (fileUri != null) {
+            Toast.makeText(this, "Subiendo archivo a Firebase Storage...", Toast.LENGTH_SHORT).show();
+            StorageReference fileRef = storageReference.child(fileUri.getLastPathSegment());
+            fileRef.putFile(fileUri)
+                    .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        activityData.put("fileUrl", uri.toString());
+                        saveActivityToFirebase(userActivitiesRef, activityId, activityData);
+                    }))
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error al subir archivo: " + e.getMessage(), Toast.LENGTH_LONG).show());
+        } else {
+            saveActivityToFirebase(userActivitiesRef, activityId, activityData);
+        }
     }
 
+    private void saveActivityToFirebase(DatabaseReference userActivitiesRef, String activityId, Map<String, Object> activityData) {
+        if (activityId != null) {
+            userActivitiesRef.child(activityId).setValue(activityData)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "Actividad guardada correctamente en Firebase", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(CreateActivity.this, HomeActivity.class);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Error al guardar la actividad en Firebase Database", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error específico al guardar en Firebase Database: " + e.getMessage(), Toast.LENGTH_LONG).show());
+        } else {
+            Toast.makeText(this, "Error: no se pudo generar el ID de la actividad", Toast.LENGTH_LONG).show();
+        }
+    }
 }
