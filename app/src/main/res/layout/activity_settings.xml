@@ -2,39 +2,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:gravity="center_horizontal">
 
+    <!-- Título de Configuración -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Configuración"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
-
-    <!-- Botón Volver -->
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Volver"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Botón Cerrar Sesión -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
 
     <!-- Botón Registrar Usuario -->
     <Button
         android:id="@+id/registerUserButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Registrar Usuario"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Botón Cerrar Sesión -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cerrar Sesión"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Botón Volver -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        android:layout_marginBottom="16dp"/>
+
 </LinearLayout>

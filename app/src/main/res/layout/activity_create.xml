@@ -9,48 +9,102 @@
         android:padding="16dp">
 
         <!-- Nombre de la actividad -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la Actividad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+
         <EditText
             android:id="@+id/activityNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nombre de la Actividad"
-            android:inputType="text" />
+            android:inputType="text"
+            android:layout_marginTop="4dp" />
 
         <!-- Proveedor -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Oferentes"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <EditText
             android:id="@+id/providerEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Oferentes"
-            android:inputType="text" />
+            android:inputType="text"
+            android:layout_marginTop="4dp" />
 
         <!-- Beneficiarios -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beneficiarios"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <EditText
             android:id="@+id/beneficiariesEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Beneficiarios"
-            android:inputType="text" />
+            android:inputType="text"
+            android:layout_marginTop="4dp" />
 
         <!-- Cupo -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cupo de la Actividad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <EditText
             android:id="@+id/cupoEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Cupo de la Actividad"
-            android:inputType="number" />
+            android:inputType="number"
+            android:layout_marginTop="4dp" />
 
         <!-- Lugar -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <Spinner
             android:id="@+id/locationSpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
 
         <!-- Capacitación -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo de Actividad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <Spinner
             android:id="@+id/capacitacionSpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
 
         <!-- Fecha y hora seleccionadas -->
         <TextView
@@ -58,28 +112,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fechas seleccionadas aparecerán aquí"
-            android:paddingTop="8dp" />
+            android:paddingTop="8dp"
+            android:layout_marginTop="16dp" />
 
         <!-- Botón para seleccionar fecha y hora -->
         <Button
             android:id="@+id/selectDateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Seleccionar Fecha y Hora" />
+            android:text="Seleccionar Fecha y Hora"
+            android:layout_marginTop="8dp" />
 
         <!-- Botón para subir archivo -->
         <Button
             android:id="@+id/uploadFileButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Subir Archivo Adjunto" />
+            android:text="Subir Archivo Adjunto"
+            android:layout_marginTop="8dp" />
 
         <!-- Botón para guardar actividad -->
         <Button
             android:id="@+id/saveActivityButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Guardar Actividad" />
+            android:text="Guardar Actividad"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/colorOnPrimary"
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
 </ScrollView>

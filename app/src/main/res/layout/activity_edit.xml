@@ -3,11 +3,11 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <!-- Título de la pantalla -->
         <TextView
@@ -54,12 +54,30 @@
             android:inputType="number"
             android:layout_marginTop="8dp"/>
 
+        <!-- Encabezado Lugar -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar de la Actividad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
         <!-- Lugar -->
         <Spinner
             android:id="@+id/editLocationSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
+
+        <!-- Encabezado Tipo de Actividad -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo de Actividad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
 
         <!-- Tipo de actividad -->
         <Spinner
@@ -74,7 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fecha y Hora seleccionadas aparecerán aquí"
-            android:paddingTop="8dp" />
+            android:paddingTop="8dp"
+            android:layout_marginTop="16dp" />
 
         <!-- Botón para seleccionar fecha y hora -->
         <Button
