@@ -43,7 +43,7 @@
                     android:text="Fecha • Lugar"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                     android:textColor="@color/textColorSecondary"
-                    android:paddingTop="4dp" />
+                    android:paddingTop="8dp" />
 
                 <!-- Proveedor -->
                 <TextView
@@ -52,7 +52,8 @@
                     android:layout_height="wrap_content"
                     android:text="Proveedor:"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary" />
+                    android:textColor="@color/textColorPrimary"
+                    android:paddingTop="8dp" />
 
                 <TextView
                     android:id="@+id/activityProviderTextView"
@@ -128,64 +129,68 @@
                     app:rippleColor="@color/colorSecondary"
                     android:textColor="@color/colorOnPrimary" />
 
-                <!-- Aquí agregamos el TextView para el historial de reprogramaciones -->
+                <!-- Historial de Reprogramaciones -->
                 <TextView
                     android:id="@+id/rescheduleHistoryTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Historial de Reprogramaciones"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:padding="8dp"
+                    android:paddingTop="16dp"
                     android:visibility="gone" />
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Botones de acción alineados horizontalmente -->
+        <!-- Botones de acción en una columna -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
 
-            <Button
+            <!-- Botón Volver -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/backButton"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Volver"
-                android:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/colorPrimary"
                 android:textColor="@color/colorOnPrimary"
-                android:layout_marginEnd="4dp"/>
+                android:layout_marginBottom="8dp" />
 
-            <Button
+            <!-- Botón Modificar -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/editActivityButton"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Modificar"
-                android:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/colorSecondary"
                 android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+                android:layout_marginBottom="8dp" />
 
-            <Button
+            <!-- Botón Reagendar -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/rescheduleActivityButton"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Reagendar" />
-
-            <Button
-                android:id="@+id/cancelActivityButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Cancelar Actividad"
-                android:backgroundTint="@color/colorAccent"
+                android:text="Reagendar"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/colorAccent"
                 android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"/>
+                android:layout_marginBottom="8dp" />
 
+            <!-- Botón Cancelar Actividad -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancelActivityButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cancelar"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/colorAccent"
+                android:textColor="@color/colorOnPrimary" />
         </LinearLayout>
 
     </LinearLayout>
