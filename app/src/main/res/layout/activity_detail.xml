@@ -52,7 +52,8 @@
                     android:layout_height="wrap_content"
                     android:text="Proveedor:"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary" />
+                    android:textColor="@color/textColorPrimary"
+                    android:paddingTop="8dp" />
 
                 <TextView
                     android:id="@+id/activityProviderTextView"
@@ -151,9 +152,8 @@
 
             <Button
                 android:id="@+id/backButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Volver"
                 android:backgroundTint="@color/colorPrimary"
                 android:textColor="@color/colorOnPrimary"
@@ -161,9 +161,8 @@
 
             <Button
                 android:id="@+id/editActivityButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Modificar"
                 android:backgroundTint="@color/colorPrimary"
                 android:textColor="@color/colorOnPrimary"
@@ -174,19 +173,32 @@
                 android:id="@+id/rescheduleActivityButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reagendar" />
+                android:text="Reagendar"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/colorOnPrimary"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"/>
 
             <Button
                 android:id="@+id/cancelActivityButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Cancelar Actividad"
                 android:backgroundTint="@color/colorAccent"
                 android:textColor="@color/colorOnPrimary"
                 android:layout_marginStart="4dp"/>
 
         </LinearLayout>
+
+        <!-- Botón Compartir Actividad -->
+        <Button
+            android:id="@+id/shareActivityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Compartir Actividad"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/colorOnPrimary"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 </ScrollView>

@@ -106,12 +106,57 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp" />
 
+        <!-- Selección de periodicidad -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repetir"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <Spinner
+            android:id="@+id/frequencySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
+
+        <!-- Selección de fecha de finalización -->
+        <LinearLayout
+            android:id="@+id/endDateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repetir hasta"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+
+            <Button
+                android:id="@+id/selectEndDateButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar Fecha de Finalización"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/selectedEndDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha de finalización no seleccionada"
+                android:paddingTop="8dp" />
+        </LinearLayout>
+
         <!-- Fecha y hora seleccionadas -->
         <TextView
             android:id="@+id/selectedDatesTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fechas seleccionadas aparecerán aquí"
+            android:text="Fecha y hora seleccionadas aparecerán aquí"
             android:paddingTop="8dp"
             android:layout_marginTop="16dp" />
 

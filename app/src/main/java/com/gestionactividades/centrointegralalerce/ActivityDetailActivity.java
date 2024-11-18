@@ -19,7 +19,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+// Importaciones adicionales
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class ActivityDetailActivity extends AppCompatActivity {
 
@@ -27,11 +31,15 @@ public class ActivityDetailActivity extends AppCompatActivity {
     private TextView providerTextView, beneficiariesTextView;
     private TextView cupoTextView, capacitacionTextView;
     private Button fileButton, backButton, editActivityButton, rescheduleActivityButton, cancelActivityButton;
+    private Button shareActivityButton; // Nuevo botón para compartir
 
     private DatabaseReference activityRef;
     private DatabaseReference cancellationsRef;
     private String activityId;
     private String userId;
+
+    private EventActivity currentActivity; // Guardamos la actividad actual
+    private Uri fileUri; // URI del archivo adjunto
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
         editActivityButton = findViewById(R.id.editActivityButton);
         rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton);
         cancelActivityButton = findViewById(R.id.cancelActivityButton);
+        shareActivityButton = findViewById(R.id.shareActivityButton); // Nuevo botón
 
         // Obtener el activityId desde el Intent
         activityId = getIntent().getStringExtra("activityId");
@@ -73,19 +82,22 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             });
 
-            // Configurar el botón "Reagendar" para navegar a RescheduleActivity (Si la funcionalidad existe)
+            // Configurar el botón "Reagendar"
             rescheduleActivityButton.setOnClickListener(v -> {
                 Intent intent = new Intent(ActivityDetailActivity.this, RescheduleActivity.class);
                 intent.putExtra("activityId", activityId);
                 startActivityForResult(intent, 2);
             });
 
-            // Configurar el botón "Cancelar Actividad" para navegar a CancelActivity
+            // Configurar el botón "Cancelar Actividad"
             cancelActivityButton.setOnClickListener(v -> {
                 Intent intent = new Intent(ActivityDetailActivity.this, CancelActivity.class);
                 intent.putExtra("activityId", activityId);
                 startActivityForResult(intent, 3);
             });
+
+            // Configurar el botón "Compartir Actividad"
+            shareActivityButton.setOnClickListener(v -> shareActivity());
 
             // Cargar los detalles de la actividad
             loadActivityDetails();
@@ -108,50 +120,55 @@ public class ActivityDetailActivity extends AppCompatActivity {
         // Revisar si la actividad existe todavía
         activityRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
                     // La actividad ha sido eliminada (cancelada)
                     fetchCancellationReason();
                     return;
                 }
 
-                EventActivity activity = dataSnapshot.getValue(EventActivity.class);
-                if (activity != null) {
-                    Log.d("ActivityDetailActivity", "Datos de la actividad cargados: " + activity.getName());
+                currentActivity = snapshot.getValue(EventActivity.class);
+                if (currentActivity != null) {
+                    Log.d("ActivityDetailActivity", "Datos de la actividad cargados: " + currentActivity.getName());
 
                     // Actualizar los campos de la interfaz con los datos de Firebase
-                    activityNameTextView.setText(activity.getName() != null ? activity.getName() : "Sin nombre");
+                    activityNameTextView.setText(currentActivity.getName() != null ? currentActivity.getName() : "Sin nombre");
 
-                    String dateText = activity.getFecha() != null && !activity.getFecha().isEmpty() ? activity.getFecha() : "Sin fecha";
-                    String locationText = activity.getLugar() != null && !activity.getLugar().isEmpty() ? activity.getLugar() : "Sin lugar";
+                    String dateText = currentActivity.getFecha() != null && !currentActivity.getFecha().isEmpty() ? currentActivity.getFecha() : "Sin fecha";
+                    String locationText = currentActivity.getLugar() != null && !currentActivity.getLugar().isEmpty() ? currentActivity.getLugar() : "Sin lugar";
                     activityDateLocationTextView.setText(String.format("%s • %s", dateText, locationText));
 
-                    String providerText = activity.getOferentes() != null && !activity.getOferentes().isEmpty() ? activity.getOferentes() : "Sin proveedor";
+                    String providerText = currentActivity.getOferentes() != null && !currentActivity.getOferentes().isEmpty() ? currentActivity.getOferentes() : "Sin proveedor";
                     providerTextView.setText(providerText);
 
-                    String beneficiariesText = activity.getBeneficiarios() != null && !activity.getBeneficiarios().isEmpty() ? activity.getBeneficiarios() : "Sin beneficiarios";
+                    String beneficiariesText = currentActivity.getBeneficiarios() != null && !currentActivity.getBeneficiarios().isEmpty() ? currentActivity.getBeneficiarios() : "Sin beneficiarios";
                     beneficiariesTextView.setText(beneficiariesText);
 
-                    String cupoText = activity.getCupo() != null && !activity.getCupo().isEmpty() ? activity.getCupo() : "Sin cupo";
+                    String cupoText = currentActivity.getCupo() != null && !currentActivity.getCupo().isEmpty() ? currentActivity.getCupo() : "Sin cupo";
                     cupoTextView.setText(cupoText);
 
-                    String capacitacionText = activity.getCapacitacion() != null && !activity.getCapacitacion().isEmpty() ? activity.getCapacitacion() : "Sin capacitación";
+                    String capacitacionText = currentActivity.getCapacitacion() != null && !currentActivity.getCapacitacion().isEmpty() ? currentActivity.getCapacitacion() : "Sin capacitación";
                     capacitacionTextView.setText(capacitacionText);
 
                     // Actividad no cancelada, habilitar botones
                     editActivityButton.setEnabled(true);
                     rescheduleActivityButton.setEnabled(true);
                     cancelActivityButton.setEnabled(true);
+                    shareActivityButton.setEnabled(true);
 
                     // Configurar botón para abrir archivo si existe URL
-                    if (activity.getFileUrl() != null && !activity.getFileUrl().isEmpty()) {
+                    if (currentActivity.getFileUrl() != null && !currentActivity.getFileUrl().isEmpty()) {
                         fileButton.setVisibility(View.VISIBLE);
                         fileButton.setOnClickListener(v -> {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(activity.getFileUrl()));
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentActivity.getFileUrl()));
                             startActivity(intent);
                         });
+
+                        // Obtener URI del archivo para adjuntarlo al correo
+                        fetchFileUri(currentActivity.getFileUrl());
                     } else {
                         fileButton.setVisibility(View.GONE);
+                        fileUri = null;
                     }
                 } else {
                     Toast.makeText(ActivityDetailActivity.this, "No se pudieron cargar los detalles.", Toast.LENGTH_SHORT).show();
@@ -160,7 +177,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(ActivityDetailActivity.this, "Error de base de datos.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -168,8 +185,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
 
     private void fetchCancellationReason() {
         // Si la actividad ha sido eliminada, revisamos la sección 'cancellations' para obtener el motivo
-        DatabaseReference cancellationRef = FirebaseDatabase.getInstance().getReference("cancellations").child(userId).child(activityId);
-        cancellationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        cancellationsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
@@ -192,17 +208,15 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 // Mostrar la información de cancelación
                 Toast.makeText(ActivityDetailActivity.this, "Esta actividad ha sido cancelada.", Toast.LENGTH_LONG).show();
 
-                // Puedes mostrar esta información en un TextView si lo deseas
-                // Por ejemplo: cancellationInfoTextView.setText(String.format("Motivo: %s\nFecha: %s", reason, date));
-                // cancellationInfoTextView.setVisibility(View.VISIBLE);
-
                 // Deshabilitar los botones
                 editActivityButton.setEnabled(false);
                 rescheduleActivityButton.setEnabled(false);
                 cancelActivityButton.setEnabled(false);
+                shareActivityButton.setEnabled(false);
 
-                // Concluimos la actividad si lo deseas
-                // finish();
+                // Puedes mostrar esta información en un TextView si lo deseas
+                // Por ejemplo: cancellationInfoTextView.setText(String.format("Motivo: %s\nFecha: %s", reason, date));
+                // cancellationInfoTextView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -210,5 +224,51 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 Toast.makeText(ActivityDetailActivity.this, "Error al recuperar la información de cancelación.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void fetchFileUri(String fileUrl) {
+        // Obtener el URI del archivo adjunto desde Firebase Storage
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
+        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+            fileUri = uri;
+        }).addOnFailureListener(e -> {
+            Toast.makeText(ActivityDetailActivity.this, "Error al obtener el archivo adjunto.", Toast.LENGTH_SHORT).show();
+            fileUri = null;
+        });
+    }
+
+    private void shareActivity() {
+        if (currentActivity == null) {
+            Toast.makeText(this, "No se puede compartir. Los detalles de la actividad no están cargados.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Construir el texto del correo electrónico con los detalles de la actividad
+        String emailSubject = "Detalles de la Actividad: " + currentActivity.getName();
+        String emailBody = "Nombre de la Actividad: " + currentActivity.getName() + "\n" +
+                "Fecha: " + (currentActivity.getFecha() != null ? currentActivity.getFecha() : "Sin fecha") + "\n" +
+                "Hora: " + (currentActivity.getHora() != null ? currentActivity.getHora() : "Sin hora") + "\n" +
+                "Lugar: " + (currentActivity.getLugar() != null ? currentActivity.getLugar() : "Sin lugar") + "\n" +
+                "Oferentes: " + (currentActivity.getOferentes() != null ? currentActivity.getOferentes() : "Sin oferentes") + "\n" +
+                "Beneficiarios: " + (currentActivity.getBeneficiarios() != null ? currentActivity.getBeneficiarios() : "Sin beneficiarios") + "\n" +
+                "Cupo: " + (currentActivity.getCupo() != null ? currentActivity.getCupo() : "Sin cupo") + "\n" +
+                "Tipo de Actividad: " + (currentActivity.getCapacitacion() != null ? currentActivity.getCapacitacion() : "Sin tipo") + "\n";
+
+        // Intent para enviar correo electrónico
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("*/*");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, emailBody);
+
+        // Adjuntar el archivo si existe
+        if (fileUri != null) {
+            emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        }
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Compartir Actividad via"));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "No hay aplicaciones de correo instaladas.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

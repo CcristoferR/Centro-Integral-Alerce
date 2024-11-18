@@ -8,9 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +36,10 @@ public class CreateActivity extends AppCompatActivity {
     private static final int PICK_FILE_REQUEST = 1;
 
     private EditText activityNameEditText, providerEditText, beneficiariesEditText, cupoEditText;
-    private Spinner locationSpinner, capacitacionSpinner;
-    private TextView selectedDatesTextView;
-    private Button uploadFileButton, saveActivityButton, selectDateButton;
+    private Spinner locationSpinner, capacitacionSpinner, frequencySpinner;
+    private TextView selectedDatesTextView, selectedEndDateTextView;
+    private LinearLayout endDateLayout;
+    private Button uploadFileButton, saveActivityButton, selectDateButton, selectEndDateButton;
     private Uri fileUri;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
@@ -54,9 +57,12 @@ public class CreateActivity extends AppCompatActivity {
             "Práctica profesional",
             "Diagnóstico"
     };
+    private String[] frequencyOptions = {"Una vez", "Diaria", "Semanal", "Mensual"};
 
     private String selectedDate; // Fecha en formato "dd/MM/yyyy"
     private String selectedTime; // Hora en formato "HH:mm"
+    private String selectedFrequency = "Una vez";
+    private String selectedEndDate; // Fecha de finalización
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +79,15 @@ public class CreateActivity extends AppCompatActivity {
         cupoEditText = findViewById(R.id.cupoEditText);
         locationSpinner = findViewById(R.id.locationSpinner);
         capacitacionSpinner = findViewById(R.id.capacitacionSpinner);
+        frequencySpinner = findViewById(R.id.frequencySpinner);
         selectedDatesTextView = findViewById(R.id.selectedDatesTextView);
+        selectedEndDateTextView = findViewById(R.id.selectedEndDateTextView);
+        endDateLayout = findViewById(R.id.endDateLayout);
 
         uploadFileButton = findViewById(R.id.uploadFileButton);
         saveActivityButton = findViewById(R.id.saveActivityButton);
         selectDateButton = findViewById(R.id.selectDateButton);
+        selectEndDateButton = findViewById(R.id.selectEndDateButton);
 
         // Inicializar referencias de Firebase
         databaseReference = FirebaseDatabase.getInstance().getReference("activities");
@@ -93,10 +103,37 @@ public class CreateActivity extends AppCompatActivity {
         capacitacionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         capacitacionSpinner.setAdapter(capacitacionAdapter);
 
-        // Configurar listeners para los botones
+        // Configurar adaptador para el Spinner de frecuencia
+        ArrayAdapter<String> frequencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, frequencyOptions);
+        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        frequencySpinner.setAdapter(frequencyAdapter);
+
+        // Configurar listeners
         selectDateButton.setOnClickListener(v -> showDateTimeDialog());
+        selectEndDateButton.setOnClickListener(v -> showEndDateDialog());
         uploadFileButton.setOnClickListener(v -> openFilePicker());
         saveActivityButton.setOnClickListener(v -> saveActivity());
+
+        frequencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                selectedFrequency = frequencyOptions[i];
+                if (selectedFrequency.equals("Una vez")) {
+                    endDateLayout.setVisibility(View.GONE);
+                    selectedEndDate = null;
+                    selectedEndDateTextView.setText("Fecha de finalización no seleccionada");
+                } else {
+                    endDateLayout.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                selectedFrequency = "Una vez";
+                endDateLayout.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void showDateTimeDialog() {
@@ -135,6 +172,14 @@ public class CreateActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showEndDateDialog() {
+        Calendar calendar = Calendar.getInstance();
+        new DatePickerDialog(this, (view, year, month, day) -> {
+            selectedEndDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+            selectedEndDateTextView.setText("Fecha de finalización: " + selectedEndDate);
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
     private void openFilePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
@@ -145,6 +190,7 @@ public class CreateActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Manejar resultado de selección de archivo
         if (requestCode == PICK_FILE_REQUEST && resultCode == RESULT_OK && data != null) {
             fileUri = data.getData();
             Toast.makeText(this, "Archivo seleccionado: " + fileUri.getLastPathSegment(), Toast.LENGTH_SHORT).show();
@@ -160,9 +206,16 @@ public class CreateActivity extends AppCompatActivity {
         String beneficiarios = beneficiariesEditText.getText().toString().trim();
         String cupo = cupoEditText.getText().toString().trim();
         String capacitacion = capacitacionSpinner.getSelectedItem() != null ? capacitacionSpinner.getSelectedItem().toString() : "Sin capacitación";
+        String frequency = selectedFrequency;
+        String endDate = selectedEndDate;
 
         if (activityName.isEmpty() || date == null || date.isEmpty() || cupo.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos obligatorios", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!frequency.equals("Una vez") && (endDate == null || endDate.isEmpty())) {
+            Toast.makeText(this, "Por favor selecciona una fecha de finalización", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -180,6 +233,8 @@ public class CreateActivity extends AppCompatActivity {
         activityData.put("beneficiarios", beneficiarios.isEmpty() ? "Sin beneficiarios" : beneficiarios);
         activityData.put("cupo", cupo);
         activityData.put("capacitacion", capacitacion);
+        activityData.put("frequency", frequency);
+        activityData.put("endDate", endDate);
 
         if (fileUri != null) {
             Toast.makeText(this, "Subiendo archivo a Firebase Storage...", Toast.LENGTH_SHORT).show();

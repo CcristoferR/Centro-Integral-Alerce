@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Configurar Fecha, Hora y Periodicidad"
+        android:text="Configurar Fecha y Hora"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_gravity="center" />
@@ -19,46 +19,16 @@
         android:id="@+id/selectDateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Seleccionar Fecha" />
+        android:text="Seleccionar Fecha"
+        android:layout_marginTop="16dp" />
 
     <!-- Selector de hora -->
     <Button
         android:id="@+id/selectTimeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Seleccionar Hora" />
-
-    <!-- Selección de periodicidad -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Repetir"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp" />
-
-    <Spinner
-        android:id="@+id/frequencySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/frequency_options" />
-
-    <!-- Selección de días de la semana para repetición semanal -->
-    <LinearLayout
-        android:id="@+id/weeklyOptionsLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:gravity="center">
-
-        <CheckBox android:text="Lun" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Mar" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Mié" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Jue" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Vie" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Sáb" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <CheckBox android:text="Dom" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    </LinearLayout>
+        android:text="Seleccionar Hora"
+        android:layout_marginTop="8dp" />
 
     <!-- Botones de Aceptar y Cancelar -->
     <LinearLayout

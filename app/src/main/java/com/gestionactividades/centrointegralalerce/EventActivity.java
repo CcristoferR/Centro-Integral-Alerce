@@ -17,6 +17,10 @@ public class EventActivity {
     private String capacitacion;
     private List<RescheduleInfo> reschedules;
 
+    // Campos para periodicidad
+    private String frequency; // "Una vez", "Diaria", "Semanal", "Mensual"
+    private String endDate;   // Fecha de finalización en formato "dd/MM/yyyy"
+
     // Campos para cancelación
     private boolean isCancelled; // Indica si la actividad está cancelada
     private String cancellationReason; // Motivo de la cancelación
@@ -153,6 +157,24 @@ public class EventActivity {
 
     public void setCancellationDate(String cancellationDate) {
         this.cancellationDate = cancellationDate;
+    }
+
+    // Getters y Setters para frecuencia y fecha de finalización
+
+    public String getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     // Clase interna para la información de reprogramación

@@ -21,7 +21,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +41,8 @@ public class HomeActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private Set<CalendarDay> decoratedDates;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,21 +120,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateDecoratedDates(EventActivity activity) {
-        String dateStr = activity.getFecha();
-        if (dateStr != null && !dateStr.isEmpty()) {
-            String[] dateParts = dateStr.split("/");
-            if (dateParts.length == 3) {
-                try {
-                    int day = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
-                    int year = Integer.parseInt(dateParts[2]);
-                    CalendarDay calendarDay = CalendarDay.from(year, month, day);
-                    decoratedDates.add(calendarDay);
-                } catch (NumberFormatException e) {
-                    Log.e("HomeActivity", "Error al parsear la fecha: " + dateStr, e);
-                }
-            }
-        }
+        List<CalendarDay> dates = getRecurringDates(activity);
+        decoratedDates.addAll(dates);
     }
 
     private void refreshCalendarAndActivities() {
@@ -148,28 +141,148 @@ public class HomeActivity extends AppCompatActivity {
 
     private List<EventActivity> getActivitiesForDate(CalendarDay date) {
         List<EventActivity> activitiesOnDate = new ArrayList<>();
-        String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", date.getDay(), date.getMonth() + 1, date.getYear());
+        String selectedDateStr = String.format(Locale.getDefault(), "%02d/%02d/%04d", date.getDay(), date.getMonth() + 1, date.getYear());
 
         for (EventActivity activity : activitiesList) {
-            String dateStr = activity.getFecha();
-            if (dateStr != null && !dateStr.isEmpty()) {
-                if (dateStr.equals(selectedDate)) {
-                    activitiesOnDate.add(activity);
-                }
+            List<String> occurrenceDates = getOccurrenceDates(activity);
+            if (occurrenceDates.contains(selectedDateStr)) {
+                activitiesOnDate.add(activity);
             }
         }
         return activitiesOnDate;
     }
 
+    private List<CalendarDay> getRecurringDates(EventActivity activity) {
+        List<CalendarDay> dates = new ArrayList<>();
+
+        if (activity.getFrequency() == null || activity.getFrequency().equals("Una vez")) {
+            // Actividad no recurrente
+            CalendarDay date = parseDate(activity.getFecha());
+            if (date != null) {
+                dates.add(date);
+            }
+            return dates;
+        }
+
+        // Parsear fechas
+        Date startDate = parseDateString(activity.getFecha());
+        Date endDate = parseDateString(activity.getEndDate());
+
+        if (startDate == null || endDate == null) {
+            return dates;
+        }
+
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate);
+
+        // Generar fechas según la frecuencia
+        while (!startCal.after(endCal)) {
+            CalendarDay day = CalendarDay.from(startCal);
+            dates.add(day);
+
+            switch (activity.getFrequency()) {
+                case "Diaria":
+                    startCal.add(Calendar.DATE, 1);
+                    break;
+                case "Semanal":
+                    startCal.add(Calendar.DATE, 7);
+                    break;
+                case "Mensual":
+                    startCal.add(Calendar.MONTH, 1);
+                    break;
+                default:
+                    // Si la frecuencia no es reconocida, salimos del bucle
+                    startCal.add(Calendar.DATE, 1);
+                    break;
+            }
+        }
+
+        return dates;
+    }
+
+    private List<String> getOccurrenceDates(EventActivity activity) {
+        List<String> dates = new ArrayList<>();
+
+        if (activity.getFrequency() == null || activity.getFrequency().equals("Una vez")) {
+            dates.add(activity.getFecha());
+            return dates;
+        }
+
+        // Parsear fechas
+        Date startDate = parseDateString(activity.getFecha());
+        Date endDate = parseDateString(activity.getEndDate());
+
+        if (startDate == null || endDate == null) {
+            return dates;
+        }
+
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate);
+
+        // Generar fechas según la frecuencia
+        while (!startCal.after(endCal)) {
+            String dateStr = dateFormat.format(startCal.getTime());
+            dates.add(dateStr);
+
+            switch (activity.getFrequency()) {
+                case "Diaria":
+                    startCal.add(Calendar.DATE, 1);
+                    break;
+                case "Semanal":
+                    startCal.add(Calendar.DATE, 7);
+                    break;
+                case "Mensual":
+                    startCal.add(Calendar.MONTH, 1);
+                    break;
+                default:
+                    startCal.add(Calendar.DATE, 1);
+                    break;
+            }
+        }
+
+        return dates;
+    }
+
+    private CalendarDay parseDate(String dateStr) {
+        if (dateStr != null && !dateStr.isEmpty()) {
+            String[] dateParts = dateStr.split("/");
+            if (dateParts.length == 3) {
+                try {
+                    int day = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]) - 1; // Mes en base 0
+                    int year = Integer.parseInt(dateParts[2]);
+                    return CalendarDay.from(year, month, day);
+                } catch (NumberFormatException e) {
+                    Log.e("HomeActivity", "Error al parsear la fecha: " + dateStr, e);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Date parseDateString(String dateStr) {
+        if (dateStr != null && !dateStr.isEmpty()) {
+            try {
+                return dateFormat.parse(dateStr);
+            } catch (ParseException e) {
+                Log.e("HomeActivity", "Error al parsear la fecha: " + dateStr, e);
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Si volvemos de CreateActivity y la actividad se creó con éxito (RESULT_OK), actualizamos la UI
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            refreshCalendarAndActivities();
-        }
-        // Si volvemos de ActivityDetailActivity y la actividad se modificó/canceló (RESULT_OK), actualizamos la UI
-        if (requestCode == 2 && resultCode == RESULT_OK) {
+
+        // Si volvemos de CreateActivity o ActivityDetailActivity y la actividad se creó o modificó, actualizamos la UI
+        if ((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK) {
             refreshCalendarAndActivities();
         }
     }
