@@ -3,29 +3,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white">
 
+    <!-- Título del Historial -->
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Historial de Actividades"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-
-    <!-- Spinner para filtros de historial -->
-    <Spinner
-        android:id="@+id/filterSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"/>
+        android:text="Historial de Actividades"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
 
-    <!-- RecyclerView para mostrar el historial -->
+    <!-- Filtro de historial con un Spinner -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filtrar por:"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp" />
+
+        <Spinner
+            android:id="@+id/filterSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <!-- RecyclerView para mostrar las actividades -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/historyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        android:padding="8dp" />
 
     <!-- Botón Volver -->
     <Button
@@ -34,5 +59,10 @@
         android:layout_height="wrap_content"
         android:text="Volver"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:background="@android:color/holo_blue_light"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp"
+        android:elevation="4dp" />
 </LinearLayout>

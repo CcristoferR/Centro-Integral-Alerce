@@ -11,8 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout; // Importación necesaria
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,22 +23,24 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.google.firebase.auth.FirebaseAuth; // Asegúrate de tener esta importación
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase; // Asegúrate de tener esta importación
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage; // Asegúrate de tener esta importación
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays; // Importación necesaria
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date; // Importación necesaria
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List; // Importación necesaria
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -48,11 +49,11 @@ public class EditActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_REQUEST = 1;
 
-    private EditText nameEditText, providerEditText, beneficiariesEditText, cupoEditText;
+    private TextInputEditText nameEditText, providerEditText, beneficiariesEditText, cupoEditText;
     private Spinner locationSpinner, capacitacionSpinner, frequencySpinner;
     private TextView selectedDatesTextView, selectedEndDateTextView;
     private LinearLayout endDateLayout;
-    private Button selectDateButton, selectEndDateButton, uploadFileButton, saveChangesButton;
+    private Button selectDateButton, selectEndDateButton, uploadFileButton, saveChangesButton, backButtonEdit;
     private Uri fileUri;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
@@ -82,6 +83,13 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        // Configuración del Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_edit);
+
+        // Inicializar el botón de regreso
+        backButtonEdit = findViewById(R.id.backButtonEdit);
+        backButtonEdit.setOnClickListener(v -> finish());
+
         // Vincular vistas
         nameEditText = findViewById(R.id.editActivityNameEditText);
         providerEditText = findViewById(R.id.editProviderEditText);
@@ -100,12 +108,15 @@ public class EditActivity extends AppCompatActivity {
 
         // Configurar los Spinners
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locationOptions);
+        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationAdapter);
 
         ArrayAdapter<String> capacitacionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, capacitacionOptions);
+        capacitacionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         capacitacionSpinner.setAdapter(capacitacionAdapter);
 
         ArrayAdapter<String> frequencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, frequencyOptions);
+        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         frequencySpinner.setAdapter(frequencyAdapter);
 
         // Obtener el UID del usuario actual
@@ -228,19 +239,39 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void showDateTimePicker() {
-        Calendar calendar = Calendar.getInstance();
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_periodicity_options, null);
+        Button dateButton = dialogView.findViewById(R.id.selectDateButton);
+        Button timeButton = dialogView.findViewById(R.id.selectTimeButton);
 
-        // Mostrar el DatePickerDialog
-        new DatePickerDialog(this, (view, year, month, day) -> {
-            selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+        dateButton.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            new DatePickerDialog(this, (view, year, month, day) -> {
+                selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+                dateButton.setText(selectedDate);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        });
 
-            // Después de seleccionar la fecha, mostrar el TimePickerDialog
-            new TimePickerDialog(this, (timeView, hour, minute) -> {
+        timeButton.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            new TimePickerDialog(this, (view, hour, minute) -> {
                 selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
-                selectedDatesTextView.setText(String.format("Fecha: %s Hora: %s", selectedDate, selectedTime));
+                timeButton.setText(selectedTime);
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        });
 
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        new AlertDialog.Builder(this)
+                .setTitle("Configurar Fecha y Hora")
+                .setView(dialogView)
+                .setPositiveButton("Aceptar", (dialog, which) -> {
+                    if (selectedDate != null && selectedTime != null) {
+                        selectedDatesTextView.setText(String.format("Fecha: %s Hora: %s", selectedDate, selectedTime));
+                    } else {
+                        Toast.makeText(this, "Por favor selecciona una fecha y hora", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .create()
+                .show();
     }
 
     private void showEndDateDialog() {
@@ -269,14 +300,14 @@ public class EditActivity extends AppCompatActivity {
 
     private void saveChanges() {
         // Obtener valores actualizados
-        String updatedName = nameEditText.getText().toString();
+        String updatedName = nameEditText.getText().toString().trim();
         String updatedFecha = selectedDate;
         String updatedHora = selectedTime;
-        String updatedLugar = locationSpinner.getSelectedItem().toString();
-        String updatedProvider = providerEditText.getText().toString();
-        String updatedBeneficiaries = beneficiariesEditText.getText().toString();
-        String updatedCupo = cupoEditText.getText().toString();
-        String updatedCapacitacion = capacitacionSpinner.getSelectedItem().toString();
+        String updatedLugar = locationSpinner.getSelectedItem() != null ? locationSpinner.getSelectedItem().toString() : "Sin lugar";
+        String updatedProvider = providerEditText.getText().toString().trim();
+        String updatedBeneficiaries = beneficiariesEditText.getText().toString().trim();
+        String updatedCupo = cupoEditText.getText().toString().trim();
+        String updatedCapacitacion = capacitacionSpinner.getSelectedItem() != null ? capacitacionSpinner.getSelectedItem().toString() : "Sin capacitación";
         String updatedFrequency = selectedFrequency;
         String updatedEndDate = selectedEndDate;
 
@@ -297,8 +328,8 @@ public class EditActivity extends AppCompatActivity {
         updates.put("fecha", updatedFecha);
         updates.put("hora", updatedHora);
         updates.put("lugar", updatedLugar);
-        updates.put("oferentes", updatedProvider);
-        updates.put("beneficiarios", updatedBeneficiaries);
+        updates.put("oferentes", updatedProvider.isEmpty() ? "Sin proveedor" : updatedProvider);
+        updates.put("beneficiarios", updatedBeneficiaries.isEmpty() ? "Sin beneficiarios" : updatedBeneficiaries);
         updates.put("cupo", updatedCupo);
         updates.put("capacitacion", updatedCapacitacion);
         updates.put("frequency", updatedFrequency);

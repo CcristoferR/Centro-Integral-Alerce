@@ -36,18 +36,5 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:layout_marginTop="16dp">
-
-        <Button
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancelar" />
-
-        <Button
-            android:id="@+id/confirmButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aceptar" />
-    </LinearLayout>
+        android:layout_marginTop="16dp"/>
 </LinearLayout>

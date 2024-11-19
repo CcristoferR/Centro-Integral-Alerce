@@ -4,6 +4,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryVariant">#3700B3</color>
     <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="primaryColor">#6200EE</color> <!-- Nuevo color -->
 
     <!-- Colores Secundarios -->
     <color name="colorSecondary">#03DAC6</color>
@@ -24,7 +25,5 @@
     <color name="dividerColor">#BDBDBD</color>
 
     <!-- Color Accent (si es necesario) -->
-    <color name="colorAccent">#FF4081</color> <!-- Añade este si tu diseño lo requiere -->
-
-    <!-- Puedes agregar más colores según sea necesario -->
+    <color name="colorAccent">#FF4081</color>
 </resources>

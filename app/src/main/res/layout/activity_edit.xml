@@ -1,171 +1,230 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/main"
+    <!-- AppBar con Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_edit"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
+
+            <Button
+                android:id="@+id/backButtonEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Volver"
+                android:textColor="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_gravity="start|center_vertical"/>
+
+            <TextView
+                android:id="@+id/toolbarTitleEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editar Actividad"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Contenido Principal -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Título de la pantalla -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Editar Actividad"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp" />
-
-        <!-- Nombre de la actividad -->
-        <EditText
-            android:id="@+id/editActivityNameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre de la Actividad"
-            android:inputType="text" />
-
-        <!-- Proveedor -->
-        <EditText
-            android:id="@+id/editProviderEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Proveedor"
-            android:inputType="text"
-            android:layout_marginTop="8dp"/>
-
-        <!-- Beneficiarios -->
-        <EditText
-            android:id="@+id/editBeneficiariesEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Beneficiarios"
-            android:inputType="text"
-            android:layout_marginTop="8dp"/>
-
-        <!-- Cupo -->
-        <EditText
-            android:id="@+id/editCupoEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Cupo de la Actividad"
-            android:inputType="number"
-            android:layout_marginTop="8dp"/>
-
-        <!-- Encabezado Lugar -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lugar de la Actividad"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <!-- Lugar -->
-        <Spinner
-            android:id="@+id/editLocationSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/select_location"
-            android:layout_marginTop="8dp" />
-
-        <!-- Encabezado Tipo de Actividad -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tipo de Actividad"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <!-- Tipo de actividad -->
-        <Spinner
-            android:id="@+id/editCapacitacionSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/select_capacitacion"
-            android:layout_marginTop="8dp" />
-
-        <!-- Encabezado Frecuencia -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Frecuencia"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <!-- Frecuencia -->
-        <Spinner
-            android:id="@+id/editFrequencySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/select_frequency"
-            android:layout_marginTop="8dp" />
-
-        <!-- Fecha y hora seleccionadas -->
-        <TextView
-            android:id="@+id/editSelectedDatesTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fecha y Hora seleccionadas aparecerán aquí"
-            android:paddingTop="8dp"
-            android:layout_marginTop="16dp" />
-
-        <!-- Botón para seleccionar fecha y hora -->
-        <Button
-            android:id="@+id/editSelectDateButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Modificar Fecha y Hora"
-            android:layout_marginTop="8dp" />
-
-        <!-- Layout para la fecha de finalización -->
         <LinearLayout
-            android:id="@+id/editEndDateLayout"
+            android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:layout_marginTop="16dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- Botón para seleccionar la fecha de finalización -->
-            <Button
-                android:id="@+id/editSelectEndDateButton"
-                android:layout_width="wrap_content"
+            <!-- Nombre de la actividad -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Seleccionar Fecha de Finalización" />
+                android:hint="Nombre de la Actividad"
+                android:layout_marginTop="8dp">
 
-            <!-- TextView para mostrar la fecha de finalización seleccionada -->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editActivityNameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Proveedor -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Proveedor"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editProviderEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Beneficiarios -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Beneficiarios"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editBeneficiariesEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Cupo -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cupo de la Actividad"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editCupoEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Lugar -->
             <TextView
-                android:id="@+id/editSelectedEndDateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fecha de finalización no seleccionada"
-                android:layout_marginStart="16dp"
-                android:layout_gravity="center_vertical" />
+                android:text="Lugar de la Actividad"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <Spinner
+                android:id="@+id/editLocationSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <!-- Tipo de Actividad -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo de Actividad"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <Spinner
+                android:id="@+id/editCapacitacionSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <!-- Frecuencia -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Frecuencia"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <Spinner
+                android:id="@+id/editFrequencySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <!-- Fecha y hora seleccionadas -->
+            <TextView
+                android:id="@+id/editSelectedDatesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha y Hora seleccionadas aparecerán aquí"
+                android:paddingTop="8dp"
+                android:layout_marginTop="16dp" />
+
+            <!-- Botón para seleccionar fecha y hora -->
+            <Button
+                android:id="@+id/editSelectDateButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modificar Fecha y Hora"
+                android:layout_marginTop="8dp" />
+
+            <!-- Selección de fecha de finalización -->
+            <LinearLayout
+                android:id="@+id/editEndDateLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Repetir hasta"
+                    android:textSize="16sp"
+                    android:layout_marginTop="16dp" />
+
+                <Button
+                    android:id="@+id/editSelectEndDateButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seleccionar Fecha de Finalización"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/editSelectedEndDateTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha de finalización no seleccionada"
+                    android:paddingTop="8dp" />
+
+            </LinearLayout>
+
+            <!-- Botón para subir archivo -->
+            <Button
+                android:id="@+id/editUploadFileButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modificar Archivo Adjunto"
+                android:layout_marginTop="8dp" />
+
+            <!-- Botón para guardar cambios -->
+            <Button
+                android:id="@+id/saveChangesButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Guardar Cambios"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="16dp" />
+
         </LinearLayout>
+    </ScrollView>
 
-        <!-- Botón para subir archivo -->
-        <Button
-            android:id="@+id/editUploadFileButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Modificar Archivo Adjunto"
-            android:layout_marginTop="8dp" />
-
-        <!-- Botón para guardar cambios -->
-        <Button
-            android:id="@+id/saveChangesButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar Cambios"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/colorOnPrimary"
-            android:layout_marginTop="16dp" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -3,44 +3,63 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp"
+    android:clipToPadding="false"
+    android:layout_marginHorizontal="8dp">
 
+    <!-- Nombre de la actividad -->
+
+    <!-- Fecha y Hora -->
     <TextView
         android:id="@+id/activityNameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:text="Nombre de la Actividad"/>
+        android:paddingBottom="4dp"
+        android:text="Nombre de la Actividad"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/activityDateTimeTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fecha/Hora"
-        android:paddingTop="4dp"/>
+        android:text="Fecha: 01/01/2024 Hora: 12:00"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingBottom="4dp" />
 
+    <!-- Estado -->
     <TextView
         android:id="@+id/activityStatusTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Estado"
-        android:paddingTop="4dp"/>
+        android:text="Estado: Activa"
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_green_dark"
+        android:paddingBottom="4dp" />
 
+    <!-- Razón de cancelación -->
     <TextView
         android:id="@+id/activityCancellationReasonTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Razón de cancelación"
-        android:paddingTop="4dp"
-        android:visibility="gone"/>
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:paddingBottom="4dp"
+        android:visibility="gone" />
 
+    <!-- Reprogramaciones -->
     <TextView
         android:id="@+id/activityReschedulesTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Reprogramaciones"
-        android:paddingTop="4dp"
-        android:visibility="gone"/>
-
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_orange_dark"
+        android:visibility="gone" />
 </LinearLayout>

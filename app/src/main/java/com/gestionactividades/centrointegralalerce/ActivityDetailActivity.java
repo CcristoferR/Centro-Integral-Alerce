@@ -3,35 +3,32 @@ package com.gestionactividades.centrointegralalerce;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-// Importaciones necesarias
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-// Importaciones adicionales
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class ActivityDetailActivity extends AppCompatActivity {
 
-    private TextView activityNameTextView, activityDateLocationTextView;
-    private TextView providerTextView, beneficiariesTextView;
-    private TextView cupoTextView, capacitacionTextView;
-    private Button fileButton, backButton, editActivityButton, rescheduleActivityButton, cancelActivityButton;
-    private Button shareActivityButton; // Nuevo botón para compartir
+    private MaterialTextView activityNameTextView, activityDateLocationTextView;
+    private MaterialTextView providerTextView, beneficiariesTextView;
+    private MaterialTextView cupoTextView, capacitacionTextView;
+    private MaterialButton fileButton, editActivityButton, rescheduleActivityButton, cancelActivityButton, shareActivityButton;
+    private MaterialButton backButtonDetail;
 
     private DatabaseReference activityRef;
     private DatabaseReference cancellationsRef;
@@ -46,6 +43,13 @@ public class ActivityDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        // Configuración del Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_detail);
+
+        // Inicializar el botón de regreso
+        backButtonDetail = findViewById(R.id.backButtonDetail);
+        backButtonDetail.setOnClickListener(v -> finish());
+
         // Vincular vistas
         activityNameTextView = findViewById(R.id.activityNameTextView);
         activityDateLocationTextView = findViewById(R.id.activityDateLocationTextView);
@@ -54,11 +58,10 @@ public class ActivityDetailActivity extends AppCompatActivity {
         cupoTextView = findViewById(R.id.activityCupoTextView);
         capacitacionTextView = findViewById(R.id.activityCapacitacionTextView);
         fileButton = findViewById(R.id.activityFileButton);
-        backButton = findViewById(R.id.backButton);
         editActivityButton = findViewById(R.id.editActivityButton);
         rescheduleActivityButton = findViewById(R.id.rescheduleActivityButton);
         cancelActivityButton = findViewById(R.id.cancelActivityButton);
-        shareActivityButton = findViewById(R.id.shareActivityButton); // Nuevo botón
+        shareActivityButton = findViewById(R.id.shareActivityButton);
 
         // Obtener el activityId desde el Intent
         activityId = getIntent().getStringExtra("activityId");
@@ -68,12 +71,6 @@ public class ActivityDetailActivity extends AppCompatActivity {
             userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             activityRef = FirebaseDatabase.getInstance().getReference("activities").child(userId).child(activityId);
             cancellationsRef = FirebaseDatabase.getInstance().getReference("cancellations").child(userId).child(activityId);
-
-            Log.d("ActivityDetailActivity", "activityId: " + activityId);
-            Log.d("ActivityDetailActivity", "userId: " + userId);
-
-            // Configurar el botón "Volver"
-            backButton.setOnClickListener(v -> finish());
 
             // Configurar el botón "Modificar" para navegar a EditActivity
             editActivityButton.setOnClickListener(v -> {
@@ -110,6 +107,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if ((requestCode == 1 || requestCode == 2 || requestCode == 3) && resultCode == RESULT_OK) {
             loadActivityDetails(); // Recargar detalles si hubo cambios, reprogramación o cancelación
             setResult(RESULT_OK); // Indicar a HomeActivity que debe actualizarse
@@ -129,8 +127,6 @@ public class ActivityDetailActivity extends AppCompatActivity {
 
                 currentActivity = snapshot.getValue(EventActivity.class);
                 if (currentActivity != null) {
-                    Log.d("ActivityDetailActivity", "Datos de la actividad cargados: " + currentActivity.getName());
-
                     // Actualizar los campos de la interfaz con los datos de Firebase
                     activityNameTextView.setText(currentActivity.getName() != null ? currentActivity.getName() : "Sin nombre");
 
@@ -147,7 +143,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
                     String cupoText = currentActivity.getCupo() != null && !currentActivity.getCupo().isEmpty() ? currentActivity.getCupo() : "Sin cupo";
                     cupoTextView.setText(cupoText);
 
-                    String capacitacionText = currentActivity.getCapacitacion() != null && !currentActivity.getCapacitacion().isEmpty() ? currentActivity.getCapacitacion() : "Sin capacitación";
+                    String capacitacionText = currentActivity.getCapacitacion() != null && !currentActivity.getCapacitacion().isEmpty() ? currentActivity.getCapacitacion() : "Sin tipo";
                     capacitacionTextView.setText(capacitacionText);
 
                     // Actividad no cancelada, habilitar botones
@@ -213,10 +209,6 @@ public class ActivityDetailActivity extends AppCompatActivity {
                 rescheduleActivityButton.setEnabled(false);
                 cancelActivityButton.setEnabled(false);
                 shareActivityButton.setEnabled(false);
-
-                // Puedes mostrar esta información en un TextView si lo deseas
-                // Por ejemplo: cancellationInfoTextView.setText(String.format("Motivo: %s\nFecha: %s", reason, date));
-                // cancellationInfoTextView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -266,7 +258,7 @@ public class ActivityDetailActivity extends AppCompatActivity {
         }
 
         try {
-            startActivity(Intent.createChooser(emailIntent, "Compartir Actividad via"));
+            startActivity(Intent.createChooser(emailIntent, "Compartir Actividad vía"));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this, "No hay aplicaciones de correo instaladas.", Toast.LENGTH_SHORT).show();
         }

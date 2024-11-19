@@ -2,18 +2,19 @@ package com.gestionactividades.centrointegralalerce;
 
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,8 +24,8 @@ import java.util.Map;
 
 public class CancelActivity extends AppCompatActivity {
 
-    private EditText cancellationReasonEditText;
-    private Button saveCancellationButton;
+    private TextInputEditText cancellationReasonEditText;
+    private Button saveCancellationButton, backButtonCancel;
 
     private String activityId;
     private String userId;
@@ -35,6 +36,13 @@ public class CancelActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cancel);
+
+        // Configuración del Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_cancel);
+
+        // Inicializar el botón de regreso
+        backButtonCancel = findViewById(R.id.backButtonCancel);
+        backButtonCancel.setOnClickListener(v -> finish());
 
         // Vincular vistas
         cancellationReasonEditText = findViewById(R.id.cancellationReasonEditText);

@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -23,6 +22,8 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,11 +45,11 @@ public class CreateActivity extends AppCompatActivity {
 
     private static final int PICK_FILE_REQUEST = 1;
 
-    private EditText activityNameEditText, providerEditText, beneficiariesEditText, cupoEditText;
+    private TextInputEditText activityNameEditText, providerEditText, beneficiariesEditText, cupoEditText;
     private Spinner locationSpinner, capacitacionSpinner, frequencySpinner;
     private TextView selectedDatesTextView, selectedEndDateTextView;
     private LinearLayout endDateLayout;
-    private Button uploadFileButton, saveActivityButton, selectDateButton, selectEndDateButton;
+    private Button uploadFileButton, saveActivityButton, selectDateButton, selectEndDateButton, backButton;
     private Uri fileUri;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
@@ -77,6 +78,13 @@ public class CreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
+
+        // Configuración del Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+
+        // Inicializar el botón de regreso
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         // Inicializar FirebaseAuth y obtener el UID del usuario
         auth = FirebaseAuth.getInstance();

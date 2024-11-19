@@ -1,204 +1,227 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/detailRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- AppBar con Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <!-- CardView para detalles de la actividad -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/activityCardView"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_detail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/dividerColor">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- Título de la Actividad -->
-                <TextView
-                    android:id="@+id/activityNameTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre de la Actividad"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                    android:textColor="@color/colorOnSurface" />
-
-                <!-- Fecha y Lugar -->
-                <TextView
-                    android:id="@+id/activityDateLocationTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha • Lugar"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/textColorSecondary"
-                    android:paddingTop="4dp" />
-
-                <!-- Proveedor -->
-                <TextView
-                    android:id="@+id/activityProviderLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Proveedor:"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary"
-                    android:paddingTop="8dp" />
-
-                <TextView
-                    android:id="@+id/activityProviderTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre del Proveedor"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/colorOnSurface" />
-
-                <!-- Beneficiarios -->
-                <TextView
-                    android:id="@+id/activityBeneficiariesLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Beneficiarios:"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary"
-                    android:paddingTop="8dp" />
-
-                <TextView
-                    android:id="@+id/activityBeneficiariesTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Lista de beneficiarios"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/colorOnSurface" />
-
-                <!-- Cupo -->
-                <TextView
-                    android:id="@+id/activityCupoLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cupo:"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary"
-                    android:paddingTop="8dp" />
-
-                <TextView
-                    android:id="@+id/activityCupoTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Cantidad de cupos"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/colorOnSurface" />
-
-                <!-- Capacitación -->
-                <TextView
-                    android:id="@+id/activityCapacitacionLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo de actividad:"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                    android:textColor="@color/textColorPrimary"
-                    android:paddingTop="8dp" />
-
-                <TextView
-                    android:id="@+id/activityCapacitacionTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Información de capacitación"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                    android:textColor="@color/colorOnSurface" />
-
-                <!-- Botón para Abrir Archivo Adjunto -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/activityFileButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Abrir archivo adjunto"
-                    android:layout_marginTop="16dp"
-                    app:backgroundTint="@color/colorPrimary"
-                    app:cornerRadius="8dp"
-                    app:rippleColor="@color/colorSecondary"
-                    android:textColor="@color/colorOnPrimary" />
-
-                <!-- Aquí agregamos el TextView para el historial de reprogramaciones -->
-                <TextView
-                    android:id="@+id/rescheduleHistoryTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Historial de Reprogramaciones"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:padding="8dp"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Botones de acción alineados horizontalmente -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
 
             <Button
-                android:id="@+id/backButton"
+                android:id="@+id/backButtonDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Volver"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/colorOnPrimary"
-                android:layout_marginEnd="4dp"/>
+                android:textColor="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_gravity="start|center_vertical"/>
 
-            <Button
-                android:id="@+id/editActivityButton"
+            <TextView
+                android:id="@+id/toolbarTitleDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Modificar"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+                android:text="Detalles de la Actividad"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
 
-            <Button
-                android:id="@+id/rescheduleActivityButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reagendar"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"/>
+        </com.google.android.material.appbar.MaterialToolbar>
 
-            <Button
-                android:id="@+id/cancelActivityButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cancelar Actividad"
-                android:backgroundTint="@color/colorAccent"
-                android:textColor="@color/colorOnPrimary"
-                android:layout_marginStart="4dp"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        </LinearLayout>
+    <!-- Contenido Principal -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Botón Compartir Actividad -->
-        <Button
-            android:id="@+id/shareActivityButton"
+        <LinearLayout
+            android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Compartir Actividad"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/colorOnPrimary"
-            android:layout_marginTop="16dp"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
-</ScrollView>
+            <!-- CardView para detalles de la actividad -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/activityCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/dividerColor">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Título de la Actividad -->
+                    <TextView
+                        android:id="@+id/activityNameTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre de la Actividad"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <!-- Fecha y Lugar -->
+                    <TextView
+                        android:id="@+id/activityDateLocationTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Fecha • Lugar"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="@color/textColorSecondary"
+                        android:paddingTop="4dp" />
+
+                    <!-- Proveedor -->
+                    <TextView
+                        android:id="@+id/activityProviderLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Oferentes:"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:textColor="@color/textColorPrimary"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/activityProviderTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre del Proveedor"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <!-- Beneficiarios -->
+                    <TextView
+                        android:id="@+id/activityBeneficiariesLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Beneficiarios:"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:textColor="@color/textColorPrimary"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/activityBeneficiariesTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lista de beneficiarios"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <!-- Cupo -->
+                    <TextView
+                        android:id="@+id/activityCupoLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cupo:"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:textColor="@color/textColorPrimary"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/activityCupoTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cantidad de cupos"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <!-- Capacitación -->
+                    <TextView
+                        android:id="@+id/activityCapacitacionLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo de actividad:"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:textColor="@color/textColorPrimary"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/activityCapacitacionTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Información de capacitación"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <!-- Botón para Abrir Archivo Adjunto -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/activityFileButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Abrir archivo adjunto"
+                        android:layout_marginTop="16dp"
+                        app:backgroundTint="@color/colorPrimary"
+                        android:textColor="@android:color/white" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Botones de acción alineados horizontalmente -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/editActivityButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modificar"
+                    android:layout_margin="4dp"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/rescheduleActivityButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reagendar"
+                    android:layout_margin="4dp"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cancelActivityButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelar"
+                    android:layout_margin="4dp"
+                    app:backgroundTint="@color/colorAccent"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+            <!-- Botón Compartir Actividad -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/shareActivityButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Compartir Actividad"
+                android:layout_marginTop="16dp"
+                app:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

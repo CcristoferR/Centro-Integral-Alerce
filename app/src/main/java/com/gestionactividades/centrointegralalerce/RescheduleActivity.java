@@ -1,22 +1,26 @@
 package com.gestionactividades.centrointegralalerce;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
+
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,8 +30,8 @@ import java.util.Locale;
 public class RescheduleActivity extends AppCompatActivity {
 
     private TextView activityNameTextView, currentDateTimeTextView;
-    private EditText reasonEditText;
-    private Button selectNewDateTimeButton, saveRescheduleButton;
+    private TextInputEditText reasonEditText;
+    private Button selectNewDateTimeButton, saveRescheduleButton, backButtonReschedule;
 
     private String activityId;
     private String userId;
@@ -40,6 +44,13 @@ public class RescheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reschedule);
+
+        // Configuración del Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar_reschedule);
+
+        // Inicializar el botón de regreso
+        backButtonReschedule = findViewById(R.id.backButtonReschedule);
+        backButtonReschedule.setOnClickListener(v -> finish());
 
         // Vincular vistas
         activityNameTextView = findViewById(R.id.activityNameTextView);
@@ -94,17 +105,43 @@ public class RescheduleActivity extends AppCompatActivity {
     private void showDateTimePicker() {
         Calendar calendar = Calendar.getInstance();
 
-        // Seleccionar fecha
-        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-            selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
+        // Crear diálogo personalizado
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Seleccionar nueva fecha y hora");
 
-            // Seleccionar hora
-            new TimePickerDialog(this, (timeView, hour, minute) -> {
-                selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
-                selectNewDateTimeButton.setText(String.format("Nueva Fecha: %s\nNueva Hora: %s", selectedDate, selectedTime));
+        // Inflar el layout personalizado
+        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_periodicity_options, null);
+        builder.setView(dialogView);
+
+        Button dateButton = dialogView.findViewById(R.id.selectDateButton);
+        Button timeButton = dialogView.findViewById(R.id.selectTimeButton);
+
+        dateButton.setOnClickListener(v -> {
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                dateButton.setText(selectedDate);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        });
+
+        timeButton.setOnClickListener(v -> {
+            new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+                selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                timeButton.setText(selectedTime);
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+        });
 
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+        builder.setPositiveButton("Aceptar", (dialog, which) -> {
+            if (selectedDate != null && selectedTime != null) {
+                selectNewDateTimeButton.setText(String.format("Nueva Fecha: %s\nNueva Hora: %s", selectedDate, selectedTime));
+            } else {
+                Toast.makeText(this, "Por favor, selecciona la fecha y hora.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void saveReschedule() {

@@ -1,59 +1,113 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rescheduleRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- AppBar con Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- Nombre de la Actividad -->
-        <TextView
-            android:id="@+id/activityNameTextView"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_reschedule"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
+
+            <Button
+                android:id="@+id/backButtonReschedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Volver"
+                android:textColor="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_gravity="start|center_vertical"/>
+
+            <TextView
+                android:id="@+id/toolbarTitleReschedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reagendar Actividad"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Contenido Principal -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre de la Actividad"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:orientation="vertical">
 
-        <!-- Fecha/Hora Actual -->
-        <TextView
-            android:id="@+id/currentDateTimeTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Fecha/Hora Actual"
-            android:layout_marginTop="8dp"/>
+            <!-- Nombre de la Actividad -->
+            <TextView
+                android:id="@+id/activityNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre de la Actividad"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
-        <!-- Botón para seleccionar nueva fecha/hora -->
-        <Button
-            android:id="@+id/selectNewDateTimeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Seleccionar nueva fecha y hora"
-            android:layout_marginTop="16dp"/>
+            <!-- Fecha/Hora Actual -->
+            <TextView
+                android:id="@+id/currentDateTimeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha/Hora Actual"
+                android:layout_marginTop="8dp"/>
 
-        <!-- Campo para el motivo de la reprogramación -->
-        <EditText
-            android:id="@+id/reasonEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Motivo de la reprogramación"
-            android:inputType="textMultiLine"
-            android:layout_marginTop="16dp"
-            android:minLines="3"
-            android:gravity="top"/>
+            <!-- Botón para seleccionar nueva fecha/hora -->
+            <Button
+                android:id="@+id/selectNewDateTimeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar nueva fecha y hora"
+                android:layout_marginTop="16dp"/>
 
-        <!-- Botón para guardar la reprogramación -->
-        <Button
-            android:id="@+id/saveRescheduleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar Reprogramación"
-            android:layout_marginTop="16dp"/>
+            <!-- Campo para el motivo de la reprogramación -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Motivo de la reprogramación"
+                android:layout_marginTop="16dp">
 
-    </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/reasonEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:gravity="top"/>
 
-</ScrollView>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Botón para guardar la reprogramación -->
+            <Button
+                android:id="@+id/saveRescheduleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Guardar Reprogramación"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
