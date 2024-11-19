@@ -3,9 +3,9 @@
     <string name="app_name">Centro Integral Alerce</string>
 
     <!-- Prompts para los Spinners -->
-    <string name="activity_type_prompt">Selecciona tipo de actividad</string>
-    <string name="periodicity_prompt">Selecciona periodicidad</string>
-    <string name="location_prompt">Selecciona lugar</string>
+    <string name="select_location">Selecciona el lugar</string>
+    <string name="select_capacitacion">Selecciona el tipo de capacitación</string>
+    <string name="select_frequency">Selecciona la frecuencia</string>
 
     <!-- Arrays para los Spinners -->
     <string-array name="activity_types">
@@ -30,4 +30,5 @@
         <item>Mensualmente</item>
         <item>Personalizado</item>
     </string-array>
+
 </resources>

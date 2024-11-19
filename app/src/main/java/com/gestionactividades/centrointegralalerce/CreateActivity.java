@@ -19,6 +19,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -26,10 +29,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class CreateActivity extends AppCompatActivity {
 
@@ -209,7 +218,7 @@ public class CreateActivity extends AppCompatActivity {
         String frequency = selectedFrequency;
         String endDate = selectedEndDate;
 
-        if (activityName.isEmpty() || date == null || date.isEmpty() || cupo.isEmpty()) {
+        if (activityName.isEmpty() || date == null || date.isEmpty() || time == null || time.isEmpty() || cupo.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -255,6 +264,9 @@ public class CreateActivity extends AppCompatActivity {
             userActivitiesRef.child(activityId).setValue(activityData)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            // Programar notificaciones
+                            scheduleNotifications(activityId, activityData.get("name").toString(), activityData.get("fecha").toString(), activityData.get("hora").toString(), activityData.get("frequency").toString(), activityData.get("endDate") != null ? activityData.get("endDate").toString() : null);
+
                             Toast.makeText(this, "Actividad guardada correctamente en Firebase", Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(CreateActivity.this, HomeActivity.class);
                             setResult(RESULT_OK, intent);
@@ -267,5 +279,114 @@ public class CreateActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Error: no se pudo generar el ID de la actividad", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void scheduleNotifications(String activityId, String activityName, String startDate, String startTime, String frequency, String endDate) {
+        try {
+            SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdfDateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+
+            Date startDateObj = sdfDate.parse(startDate);
+            Date endDateObj = endDate != null ? sdfDate.parse(endDate) : startDateObj;
+
+            // Validar que la fecha de finalización es posterior a la fecha de inicio
+            if (endDateObj.before(startDateObj)) {
+                Toast.makeText(this, "La fecha de finalización debe ser posterior a la fecha de inicio", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDateObj);
+
+            // Lista de frecuencias válidas
+            List<String> validFrequencies = Arrays.asList(frequencyOptions);
+
+            // Validar frecuencia
+            if (!validFrequencies.contains(frequency)) {
+                Toast.makeText(this, "Frecuencia no válida", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Loop through dates based on frequency
+            while (!calendar.getTime().after(endDateObj)) {
+                String occurrenceDate = sdfDate.format(calendar.getTime());
+                String fechaHora = occurrenceDate + " " + startTime;
+                Date activityDateTime = sdfDateTime.parse(fechaHora);
+                long activityTimeMillis = activityDateTime.getTime();
+
+                long currentTimeMillis = System.currentTimeMillis();
+
+                // Programar notificación un día antes
+                long oneDayBeforeMillis = activityTimeMillis - TimeUnit.DAYS.toMillis(1);
+                if (oneDayBeforeMillis > currentTimeMillis) {
+                    scheduleNotification(
+                            activityId,
+                            "La actividad \"" + activityName + "\" es mañana.",
+                            oneDayBeforeMillis,
+                            activityId + "_one_day_before_" + occurrenceDate
+                    );
+                }
+
+                // Programar notificación un minuto antes
+                long oneMinuteBeforeMillis = activityTimeMillis - TimeUnit.MINUTES.toMillis(1);
+                if (oneMinuteBeforeMillis > currentTimeMillis) {
+                    scheduleNotification(
+                            activityId,
+                            "La actividad \"" + activityName + "\" está por comenzar.",
+                            oneMinuteBeforeMillis,
+                            activityId + "_one_minute_before_" + occurrenceDate
+                    );
+                }
+
+                // Incrementar la fecha según la frecuencia
+                switch (frequency) {
+                    case "Diaria":
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        break;
+                    case "Semanal":
+                        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                        break;
+                    case "Mensual":
+                        calendar.add(Calendar.MONTH, 1);
+                        break;
+                    default:
+                        // Para "Una vez", salimos del bucle
+                        break;
+                }
+
+                // Detener el bucle si la frecuencia es "Una vez"
+                if (frequency.equals("Una vez")) {
+                    break;
+                }
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error al programar notificaciones. Formato de fecha u hora inválido.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void scheduleNotification(String activityId, String message, long triggerAtMillis, String uniqueId) {
+        long delay = triggerAtMillis - System.currentTimeMillis();
+        if (delay < 0) {
+            // Si el tiempo ya pasó, no programamos la notificación
+            return;
+        }
+
+        // Crear datos para pasar al Worker
+        Data notificationData = new Data.Builder()
+                .putString("title", "Recordatorio de Actividad")
+                .putString("message", message)
+                .build();
+
+        // Crear solicitud de trabajo única
+        OneTimeWorkRequest notificationRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInputData(notificationData)
+                .addTag(uniqueId) // Agregar una etiqueta única para poder cancelar si es necesario
+                .build();
+
+        // Encolar el trabajo
+        WorkManager.getInstance(getApplicationContext()).enqueue(notificationRequest);
     }
 }

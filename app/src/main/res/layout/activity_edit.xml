@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -68,6 +69,7 @@
             android:id="@+id/editLocationSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:prompt="@string/select_location"
             android:layout_marginTop="8dp" />
 
         <!-- Encabezado Tipo de Actividad -->
@@ -84,6 +86,24 @@
             android:id="@+id/editCapacitacionSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:prompt="@string/select_capacitacion"
+            android:layout_marginTop="8dp" />
+
+        <!-- Encabezado Frecuencia -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frecuencia"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Frecuencia -->
+        <Spinner
+            android:id="@+id/editFrequencySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/select_frequency"
             android:layout_marginTop="8dp" />
 
         <!-- Fecha y hora seleccionadas -->
@@ -102,6 +122,32 @@
             android:layout_height="wrap_content"
             android:text="Modificar Fecha y Hora"
             android:layout_marginTop="8dp" />
+
+        <!-- Layout para la fecha de finalización -->
+        <LinearLayout
+            android:id="@+id/editEndDateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="16dp">
+
+            <!-- Botón para seleccionar la fecha de finalización -->
+            <Button
+                android:id="@+id/editSelectEndDateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar Fecha de Finalización" />
+
+            <!-- TextView para mostrar la fecha de finalización seleccionada -->
+            <TextView
+                android:id="@+id/editSelectedEndDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha de finalización no seleccionada"
+                android:layout_marginStart="16dp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
 
         <!-- Botón para subir archivo -->
         <Button

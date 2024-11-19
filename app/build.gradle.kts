@@ -53,5 +53,6 @@ dependencies {
     implementation ("com.google.firebase:firebase-database:20.0.5") // Firebase Realtime Database
     implementation ("com.google.firebase:firebase-storage:20.0.0") // Firebase Storage (para archivos)
     implementation ("com.google.firebase:firebase-auth:21.0.1") // Firebase Auth (para autenticación)
+    implementation ("androidx.work:work-runtime:2.8.1") // Última versión a la fecha
 
 }
