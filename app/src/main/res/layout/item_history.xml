@@ -11,8 +11,6 @@
     android:layout_marginHorizontal="8dp">
 
     <!-- Nombre de la actividad -->
-
-    <!-- Fecha y Hora -->
     <TextView
         android:id="@+id/activityNameTextView"
         android:layout_width="match_parent"
@@ -23,6 +21,7 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Fecha y Hora -->
     <TextView
         android:id="@+id/activityDateTimeTextView"
         android:layout_width="match_parent"
@@ -39,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="Estado: Activa"
         android:textSize="14sp"
-        android:textColor="@android:color/holo_green_dark"
+        android:textColor="@color/statusColor"
         android:paddingBottom="4dp" />
 
     <!-- Razón de cancelación -->

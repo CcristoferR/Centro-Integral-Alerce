@@ -1,28 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/colorBackground"
     android:padding="24dp">
 
+    <!-- Imagen del Logo -->
+    <!-- Asegúrate de que este sea el nombre de tu imagen -->
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"/>
+
     <!-- Título de la aplicación -->
-    <TextView
-        android:id="@+id/appTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="Centro Integral Alerce"
-        android:textColor="#3F51B5"
-        android:textSize="24sp"
-        android:textStyle="bold"
+
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/logo_universidad"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Campo de entrada para el correo electrónico -->
+    <TextView
+        android:id="@+id/appTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Centro Integral Alerce"
+        android:textColor="@color/universityGreen"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logoImageView" />
+
     <EditText
         android:id="@+id/emailEditText"
         android:layout_width="0dp"
@@ -33,9 +53,9 @@
         android:hint="Correo electrónico"
         android:inputType="textEmailAddress"
         android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/appTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appTitle" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Campo de entrada para la contraseña -->
     <EditText
@@ -48,9 +68,9 @@
         android:hint="Contraseña"
         android:inputType="textPassword"
         android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/emailEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailEditText" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Botón de inicio de sesión -->
     <Button
@@ -59,15 +79,15 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#3F51B5"
+        android:backgroundTint="@color/universityGreen"
         android:fontFamily="sans-serif-medium"
         android:padding="16dp"
         android:text="Iniciar sesión"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorOnPrimary"
         android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/passwordEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEditText" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Enlace para recuperación de contraseña -->
     <TextView
@@ -77,9 +97,9 @@
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif"
         android:text="¿Olvidaste tu contraseña?"
-        android:textColor="#3F51B5"
+        android:textColor="@color/universityGreen"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginButton" />
+        app:layout_constraintTop_toBottomOf="@id/loginButton"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

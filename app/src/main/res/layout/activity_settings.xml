@@ -1,57 +1,88 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
-    android:background="@android:color/white">
+    android:layout_height="match_parent">
 
-    <!-- Título de Configuración -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Configuración"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="32dp" />
-
-    <!-- Botón Registrar Usuario -->
-    <Button
-        android:id="@+id/registerUserButton"
+    <!-- AppBar con Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Registrar Usuario"
-        android:textSize="16sp"
-        android:background="@android:color/holo_blue_light"
-        android:textColor="@android:color/white"
-        android:paddingVertical="12dp"
-        android:elevation="4dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="wrap_content">
 
-    <!-- Botón Cerrar Sesión -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
-        android:textSize="16sp"
-        android:background="@android:color/holo_red_light"
-        android:textColor="@android:color/white"
-        android:paddingVertical="12dp"
-        android:elevation="4dp"
-        android:layout_marginBottom="16dp" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/settingsToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light">
 
-    <!-- Botón Volver -->
-    <Button
-        android:id="@+id/backButton"
+            <!-- Título centrado -->
+            <TextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Configuración"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Contenido Principal -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Volver"
-        android:textSize="16sp"
-        android:background="@android:color/darker_gray"
-        android:textColor="@android:color/white"
-        android:paddingVertical="12dp"
-        android:elevation="4dp"
-        android:layout_marginBottom="16dp" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Botón Registrar Usuario -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/registerUserButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registrar Usuario"
+                android:textSize="16sp"
+                app:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:paddingVertical="12dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="8dp" />
+
+            <!-- Botón Cerrar Sesión -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cerrar Sesión"
+                android:textSize="16sp"
+                app:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:paddingVertical="12dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="8dp" />
+
+            <!-- Botón Volver -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/backButtonContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Volver"
+                android:textSize="16sp"
+                app:backgroundTint="@color/colorPrimary"
+                android:textColor="@android:color/white"
+                android:paddingVertical="12dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

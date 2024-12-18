@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Colores Primarios -->
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryVariant">#3700B3</color>
-    <color name="colorOnPrimary">#FFFFFF</color>
-    <color name="primaryColor">#6200EE</color> <!-- Nuevo color -->
+    <color name="colorPrimary">#1E5C4F</color> <!-- Color personalizado para la barra -->
+    <color name="colorPrimaryVariant">#16443A</color> <!-- Variante más oscura -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Texto blanco sobre el color primario -->
+    <color name="primaryColor">#1E5C4F</color> <!-- Actualizado -->
 
     <!-- Colores Secundarios -->
-    <color name="colorSecondary">#03DAC6</color>
-    <color name="colorSecondaryVariant">#018786</color>
+    <color name="colorSecondary">#A5D6A7</color> <!-- Verde más claro -->
+    <color name="colorSecondaryVariant">#81C784</color>
     <color name="colorOnSecondary">#000000</color>
 
     <!-- Colores de Fondo y Superficie -->
@@ -24,6 +24,13 @@
     <!-- Otros Colores -->
     <color name="dividerColor">#BDBDBD</color>
 
-    <!-- Color Accent (si es necesario) -->
-    <color name="colorAccent">#FF4081</color>
+    <!-- Color Accent -->
+    <color name="colorAccent">#f33e3e</color>
+
+    <!-- Colores Personalizados -->
+    <color name="universityGreen">#1E5C4F</color> <!-- Color de la barra y botones principales -->
+    <color name="buttonLightGreen">#FFF</color> <!-- Verde claro para botones secundarios -->
+
+    <!-- Nuevo color para el estado -->
+    <color name="statusColor">#555555</color> <!-- Gris oscuro -->
 </resources>

@@ -25,7 +25,7 @@
                 android:text="Volver"
                 android:textColor="@android:color/white"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:layout_gravity="start|center_vertical"/>
+                android:layout_gravity="start|center_vertical" />
 
             <TextView
                 android:id="@+id/toolbarTitleDetail"
@@ -35,10 +35,8 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:layout_gravity="center"/>
-
+                android:layout_gravity="center" />
         </com.google.android.material.appbar.MaterialToolbar>
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Contenido Principal -->
@@ -184,8 +182,12 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/editActivityButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="90dp"
+                    android:paddingHorizontal="12dp"
+                    android:textSize="12sp"
                     android:text="Modificar"
                     android:layout_margin="4dp"
                     app:backgroundTint="@color/colorPrimary"
@@ -193,8 +195,12 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/rescheduleActivityButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="90dp"
+                    android:paddingHorizontal="12dp"
+                    android:textSize="12sp"
                     android:text="Reagendar"
                     android:layout_margin="4dp"
                     app:backgroundTint="@color/colorPrimary"
@@ -202,13 +208,16 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cancelActivityButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minWidth="90dp"
+                    android:paddingHorizontal="12dp"
+                    android:textSize="12sp"
                     android:text="Cancelar"
                     android:layout_margin="4dp"
                     app:backgroundTint="@color/colorAccent"
                     android:textColor="@android:color/white" />
-
             </LinearLayout>
 
             <!-- Botón Compartir Actividad -->
@@ -220,8 +229,6 @@
                 android:layout_marginTop="16dp"
                 app:backgroundTint="@color/colorPrimary"
                 android:textColor="@android:color/white" />
-
         </LinearLayout>
     </ScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
